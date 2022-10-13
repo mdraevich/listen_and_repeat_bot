@@ -17,6 +17,10 @@ class ProgressQueue():
     def next_question(self):
         raise NotImplemented
 
+    def current_question(self):
+        raise NotImplemented
+
+
 
 class ProgressQueueRandom(ProgressQueue):
     """
@@ -26,6 +30,7 @@ class ProgressQueueRandom(ProgressQueue):
 
     def __init__(self):
         self.questions = []
+        self.cur_question = None
 
 
     def update_questions(self, questions):
@@ -33,5 +38,10 @@ class ProgressQueueRandom(ProgressQueue):
 
 
     def next_question(self):
-        return random.choice(self.questions)
+        self.cur_question = random.choice(self.questions)
+        return self.cur_question
+
+
+    def current_question(self):
+        return self.cur_question
 
