@@ -9,8 +9,6 @@ from telethon import errors
 
 class PollPublicChannel():
 
-    POLLING_INTERVAL = 60  # 1 minute
-
 
     def __init__(self, channel_link, message_limit=10):
         self.logger = logging.getLogger(__name__)
@@ -126,27 +124,23 @@ class PollPublicChannel():
 
     def poll_channel(self):
         try:
-            while True:
-                self.messages = self.client.get_messages(
-                                            self.channel_link,
-                                            limit=self.message_limit)
+            self.messages = self.client.get_messages(
+                                        self.channel_link,
+                                        limit=self.message_limit)
 
-                self.logger.debug(f"Polling is done successfully, "
-                                  f"got {len(self.messages)} posts, "
-                                  f"waiting for {self.POLLING_INTERVAL} sec")
+            self.logger.info(f"Polling is done successfully, "
+                             f"got {len(self.messages)} posts")
 
-                time.sleep(self.POLLING_INTERVAL)
         except Exception as e:
             if type(e) is errors.FloodWaitError:
                 self.logger.exception(f"Too much requests, wait for "
                                       f"{e.seconds} second(s)!")
 
-            self.logger.warning(f"Stop polling channel due to {type(e)}")
+            if type(e) is KeyboardInterrupt:
+                self.logger.exception("Ctrl+C is fired, please wait for "
+                                      "a while until the bot stops.")
 
-
-    def start_polling(self):
-        self.logger.info("Start polling channel")
-        self.poll_channel()
+            self.logger.warning(f"Cannot poll channel due to {type(e)}")
 
 
 
@@ -169,5 +163,5 @@ if __name__ == "__main__":
                                     api_hash=api_hash
                                     ):
         poll_channel.confirm_phone(phone, code=input("Enter code: "))
-        
-    poll_channel.start_polling()
+
+    poll_channel.poll_channel()
