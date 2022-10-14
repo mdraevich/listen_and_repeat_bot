@@ -1,6 +1,7 @@
 import os
 import random
 import logging
+from difflib import SequenceMatcher
 
 from telethon.tl.patched import Message 
 from telegram.ext import (
@@ -8,8 +9,9 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     CallbackContext,
-    Filters,
+    Filters
 )
+from telegram import ParseMode
 
 from progress_db import ProgressDatabase
 from question_db import QuestionDatabase
@@ -30,6 +32,9 @@ question_db = QuestionDatabase()
 
 
 
+def is_similar_to(user_answer, correct_answer):
+    return SequenceMatcher(None, user_answer, correct_answer).ratio() > 0.8
+
 
 def start(update, context):
     user_id = update.message.from_user.id
@@ -37,7 +42,8 @@ def start(update, context):
     progress_db.create_user(user_id)
     progress_db.create_channel_progress(user_id, channel_link)
 
-    update.message.reply_text(send_phrase_to_learn(user_id))
+    update.message.reply_text(send_phrase_to_learn(user_id), 
+                              parse_mode=ParseMode.HTML)
 
 def send_phrase_to_learn(user_id):
 
@@ -66,20 +72,39 @@ def send_phrase_to_learn(user_id):
     else:
         example = question
 
-    return f"{example}\nTranslate: {question}"
+    return f"{example}\n\n🤔 ... <b>{question}</b>?"
 
 
 def check_translation(update, context):
     user_id = update.message.from_user.id
+    user_answer = update.message.text.lower()
 
     queue_obj = progress_db.get_channel_progress(user_id, channel_link)
     question_id = queue_obj.current_question()
 
     question = question_db.get_question_by_id(channel_link, question_id)
-    answers = " / ".join(question["answers"])
+    answers = question["answers"]
 
-    update.message.reply_text(f"Correct answer: {answers}")
-    update.message.reply_text(send_phrase_to_learn(user_id))
+    is_user_answer_correct = any([ 
+        is_similar_to(user_answer, correct_answer)
+        for correct_answer in answers
+    ])
+
+    formatted_answers = []
+    for correct_answer in answers:
+        if is_similar_to(user_answer, correct_answer):
+            formatted_answers.append(f"<u><b>{correct_answer}</b></u>")
+        else:
+            formatted_answers.append(correct_answer)
+
+    if is_user_answer_correct:
+        update.message.reply_text(f"✅ {' / '.join(formatted_answers)}",
+                                  parse_mode=ParseMode.HTML)
+    else:
+        update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
+
+    update.message.reply_text(send_phrase_to_learn(user_id),
+                              parse_mode=ParseMode.HTML)
 
 
 def reset_learning_progress():
