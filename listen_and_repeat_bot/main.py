@@ -11,9 +11,14 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     CallbackContext,
+    CallbackQueryHandler,
     Filters
 )
-from telegram import ParseMode, ReplyKeyboardMarkup
+from telegram import (
+    ParseMode,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
 
 from progress_db import ProgressDatabase
 from question_db import QuestionDatabase
@@ -43,9 +48,6 @@ def start(update, context):
     user_id = update.message.from_user.id
 
     progress_db.create_user(user_id)
-    progress_db.create_channel_progress(user_id, channel_link)
-    progress_db.set_current_channel_of_user(user_id, channel_link)
-
     update.message.reply_text(send_phrase_to_learn(user_id), 
                               parse_mode=ParseMode.HTML)
 
@@ -128,9 +130,35 @@ def reset_learning_progress():
 
 
 def set_channel_to_learn(update, context):
-    channels = get_channels()
-    formatted_channels = "\n".join()
-    update.message.reply_text()
+    buttons = [
+        [InlineKeyboardButton(text=channel["name"], 
+                              callback_data=channel["channel_id"])]
+        for channel in get_channels() 
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
+    update.message.reply_text("Select from the following", 
+                              reply_markup=keyboard)
+
+
+def inline_callbacks(update, context):
+    user_id = update.callback_query.from_user.id
+    channel_id = update.callback_query.data
+
+    update.callback_query.answer()
+    
+    progress_db.create_channel_progress(user_id, channel_id)
+    if progress_db.set_current_channel_of_user(user_id, channel_id):
+        update.callback_query.edit_message_text(
+                              text="Your channel is updated.\n"
+                                   "Run /start")
+    else:
+        update.callback_query.edit_message_text(
+                              text=ERROR_MESSAGE)
+
+
+
+
 
 
 def show_learning_progress():
@@ -140,6 +168,12 @@ def get_channels():
     return [
         {
             "name": "Listen & Repeat | Phrases",
+            "channel_id": "https://t.me/listen_repeat_phrases",
+            "polling_interval": "120",
+            "message_limit": "100"
+        },
+        {
+            "name": "Listen & Repeat | Test",
             "channel_id": "https://t.me/listen_repeat_phrases",
             "polling_interval": "120",
             "message_limit": "100"
@@ -154,12 +188,13 @@ if __name__ == "__main__":
     api_key = os.environ.get("BOT_API_KEY", None)
     api_id = os.environ.get("API_ID", None)
     api_hash = os.environ.get("API_HASH", None)
-    channel_link = os.environ.get("CHANNEL", None)
+    channel_link = get_channels()[0]["channel_id"]
 
 
     updater = Updater(api_key)
 
     dispatcher = updater.dispatcher
+    updater.dispatcher.add_handler(CallbackQueryHandler(inline_callbacks))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("learn", set_channel_to_learn))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
