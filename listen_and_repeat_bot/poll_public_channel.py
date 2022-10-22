@@ -110,11 +110,11 @@ class PollPublicChannel():
         """
         try:
             self.channels[channel_id] = self.client.get_messages(
-                                        channel_link,
+                                        channel_id,
                                         limit=message_limit)
 
-            self.logger.info(f"Polling is done successfully, "
-                             f"got {len(self.messages)} posts")
+            self.logger.info(f"Polling is done successfully, got "
+                             f"{len(self.channels[channel_id])} posts")
             return (0,)
 
         except (ConnectionError, errors.FloodWaitError) as e:

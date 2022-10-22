@@ -34,7 +34,7 @@ class ProgressDatabase():
             return False
         else:
             self.progress_db[user_id] = {
-                CUR_CHANNEL_KEY: None
+                self.CUR_CHANNEL_KEY: None
             }
             self.logger.info(f"{user_id} was created in database")
             return True

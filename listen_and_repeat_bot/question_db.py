@@ -93,7 +93,7 @@ class QuestionDatabase():
             except Exception as e:
                 self.logger.exception(f"Can't generate hash for "
                                       f"channel_id={channel_id} "
-                                      f"question={question} due to {type(e)}")
+                                      f"question={question} due to {e}")
                 continue
 
             self.question_db[channel_id][question_id] = {
