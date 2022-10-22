@@ -1,5 +1,7 @@
 import os
+import time
 import random
+import getpass
 import logging
 from difflib import SequenceMatcher
 
@@ -20,6 +22,7 @@ from progress_queue_library import ProgressQueue, ProgressQueueRandom
 from poll_public_channel import PollPublicChannel
 
 
+SIMILARITY_REQUIRED = 0.8
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
@@ -31,9 +34,8 @@ question_db = QuestionDatabase()
 
 
 
-
-def is_similar_to(user_answer, correct_answer):
-    return SequenceMatcher(None, user_answer, correct_answer).ratio() > 0.8
+def get_similarity(user_answer, correct_answer):
+    return SequenceMatcher(None, user_answer, correct_answer).ratio()
 
 
 def start(update, context):
@@ -44,6 +46,7 @@ def start(update, context):
 
     update.message.reply_text(send_phrase_to_learn(user_id), 
                               parse_mode=ParseMode.HTML)
+
 
 def send_phrase_to_learn(user_id):
 
@@ -83,24 +86,29 @@ def check_translation(update, context):
     question_id = queue_obj.current_question()
 
     question = question_db.get_question_by_id(channel_link, question_id)
-    answers = question["answers"]
+    correct_answers = question["answers"]
 
-    is_user_answer_correct = any([ 
-        is_similar_to(user_answer, correct_answer)
-        for correct_answer in answers
-    ])
+
+    answers_similarity = [ 
+        (get_similarity(user_answer, answer), idx)
+        for (idx, answer) in enumerate(correct_answers)
+    ]
+    max_similar_value, max_similar_idx = max(answers_similarity)
+    is_user_answer_correct = max_similar_value > SIMILARITY_REQUIRED
 
     formatted_answers = []
-    for correct_answer in answers:
-        if is_similar_to(user_answer, correct_answer):
-            formatted_answers.append(f"<u><b>{correct_answer}</b></u>")
+    for (idx, answer) in enumerate(correct_answers):
+        if is_user_answer_correct and idx == max_similar_idx:
+            formatted_answers.append(f"<u><b>{answer}</b></u>")
         else:
-            formatted_answers.append(correct_answer)
+            formatted_answers.append(answer)
 
     if is_user_answer_correct:
+        # answer is correct
         update.message.reply_text(f"✅ {' / '.join(formatted_answers)}",
                                   parse_mode=ParseMode.HTML)
     else:
+        # answer is incorrect
         update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
 
     update.message.reply_text(send_phrase_to_learn(user_id),
@@ -139,16 +147,36 @@ if __name__ == "__main__":
     updater.start_polling()
 
     poll_channel = PollPublicChannel(
-                                    channel_link=channel_link,
-                                    message_limit=100
-                                    )
+        channel_link=channel_link,
+        message_limit=100
+    )
 
-    if not poll_channel.authenticate(
-                                    phone=phone,
-                                    api_id=api_id,
-                                    api_hash=api_hash
-                                    ):
-        poll_channel.confirm_phone(phone, code=input("Enter code: "))
+
+    # perform authentication
+    auth_response = poll_channel.authenticate(
+                        phone=phone,api_id=api_id, api_hash=api_hash)
+    auth_code = auth_response[0]
+
+    if auth_code == 0:  # already authenticated 
+        pass
+
+    elif auth_code == 1:  # phone confirmation is needed
+        phone_auth_response = poll_channel.confirm_phone(
+                                    phone, code=input("Enter code: "))
+        phone_auth_code = phone_auth_response[0]
+
+        if phone_auth_code == 0:  # authenticated, success
+            pass
+        
+        elif phone_auth_code == 1:  # cloud password is needed
+            poll_channel.confirm_cloud_password(
+                password=getpass.getpass("Enter 2FA password: "))
+        
+        elif phone_auth_code == 10:  # phone is not registered
+            exit()
+
+    elif auth_code == 5:  # flood error
+        exit()
 
     poll_channel.poll_channel()
     updater.idle()
