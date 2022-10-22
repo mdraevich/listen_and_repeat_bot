@@ -28,7 +28,18 @@ from poll_public_channel import PollPublicChannel
 
 
 SIMILARITY_REQUIRED = 0.8
-ERROR_MESSAGE = "⚠️ Internal error happened"
+ERROR_MESSAGE = "⚠️ Server error, contact @mdraevich"
+HELLO_MESSAGE = """
+Hello ✌️
+This bot can help you to improve your language vocabulary.
+In order to begin, select a channel to learn phrases from.
+
+You can also publish your own channel to read phrases from.
+Feel free to contact me @mdraevich.
+
+📦 <b>To select a channel</b>: /learn 
+"""
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
@@ -47,9 +58,13 @@ def get_similarity(user_answer, correct_answer):
 def start(update, context):
     user_id = update.message.from_user.id
 
-    progress_db.create_user(user_id)
-    update.message.reply_text(send_phrase_to_learn(user_id), 
-                              parse_mode=ParseMode.HTML)
+    if progress_db.create_user(user_id):
+        update.message.reply_text(HELLO_MESSAGE, 
+                                  parse_mode=ParseMode.HTML)
+        logger.info(f"new user has been created, user_id={user_id}")
+    else:
+        update.message.reply_text(send_phrase_to_learn(user_id),
+                                  parse_mode=ParseMode.HTML)
 
 
 def send_phrase_to_learn(user_id):
