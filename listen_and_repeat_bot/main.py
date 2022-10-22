@@ -13,7 +13,7 @@ from telegram.ext import (
     CallbackContext,
     Filters
 )
-from telegram import ParseMode
+from telegram import ParseMode, ReplyKeyboardMarkup
 
 from progress_db import ProgressDatabase
 from question_db import QuestionDatabase
@@ -23,6 +23,7 @@ from poll_public_channel import PollPublicChannel
 
 
 SIMILARITY_REQUIRED = 0.8
+ERROR_MESSAGE = "⚠️ Internal error happened"
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
@@ -43,31 +44,31 @@ def start(update, context):
 
     progress_db.create_user(user_id)
     progress_db.create_channel_progress(user_id, channel_link)
+    progress_db.set_current_channel_of_user(user_id, channel_link)
 
     update.message.reply_text(send_phrase_to_learn(user_id), 
                               parse_mode=ParseMode.HTML)
 
 
 def send_phrase_to_learn(user_id):
+    exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
+    if exit_code != 0:
+        return ERROR_MESSAGE
+    if channel_id is None:
+        return f"Please, select a channel by /learn"
 
-    question_db.create_channel(channel_link)
-    question_db.parse_channel_posts(
-        channel_id = channel_link,
-        posts = [ 
-            post.message
-            for post in poll_channel.get_channel_posts(channel_link) 
-            if isinstance(post, Message) 
-        ]
-    )
+    exit_code, queue_obj = progress_db.get_channel_progress(
+                           user_id, channel_id)
 
-    queue_obj = progress_db.get_channel_progress(user_id, channel_link)
+    if exit_code != 0:
+        return ERROR_MESSAGE
 
     queue_obj.update_questions(
         question_db.get_question_ids(channel_link)
     )
 
     question_id = queue_obj.next_question()
-    question_obj = question_db.get_question_by_id(channel_link, question_id)
+    question_obj = question_db.get_question_by_id(channel_id, question_id)
     
     question = question_obj["question"]
     if len(question_obj["examples"]) > 0:
@@ -82,7 +83,14 @@ def check_translation(update, context):
     user_id = update.message.from_user.id
     user_answer = update.message.text.lower()
 
-    queue_obj = progress_db.get_channel_progress(user_id, channel_link)
+    exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
+    if exit_code != 0:
+        return ERROR_MESSAGE
+    if channel_id is None:
+        return f"Please, select a channel by /learn"
+
+    exit_code, queue_obj = progress_db.get_channel_progress(
+                           user_id, channel_id)
     question_id = queue_obj.current_question()
 
     question = question_db.get_question_by_id(channel_link, question_id)
@@ -119,12 +127,24 @@ def reset_learning_progress():
     pass
 
 
-def set_learning_channel():
-    pass
+def set_channel_to_learn(update, context):
+    channels = get_channels()
+    formatted_channels = "\n".join()
+    update.message.reply_text()
 
 
 def show_learning_progress():
     pass
+
+def get_channels():
+    return [
+        {
+            "name": "Listen & Repeat | Phrases",
+            "channel_id": "https://t.me/listen_repeat_phrases",
+            "polling_interval": "120",
+            "message_limit": "100"
+        }
+    ]
 
 
 
@@ -141,6 +161,7 @@ if __name__ == "__main__":
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("learn", set_channel_to_learn))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
     updater.start_polling()
@@ -175,7 +196,17 @@ if __name__ == "__main__":
         exit()
 
     poll_channel.poll_channel(
-        channel_link=channel_link, 
+        channel_id=channel_link, 
         message_limit=100
     )
+    question_db.create_channel(channel_link)
+    question_db.parse_channel_posts(
+        channel_link,
+        posts = [ 
+            post.message
+            for post in poll_channel.get_channel_posts(channel_link) 
+            if isinstance(post, Message) 
+        ]
+    )
+
     updater.idle()
