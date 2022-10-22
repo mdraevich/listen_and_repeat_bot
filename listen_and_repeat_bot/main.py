@@ -55,7 +55,7 @@ def send_phrase_to_learn(user_id):
         channel_id = channel_link,
         posts = [ 
             post.message
-            for post in poll_channel.messages 
+            for post in poll_channel.get_channel_posts(channel_link) 
             if isinstance(post, Message) 
         ]
     )
@@ -143,14 +143,10 @@ if __name__ == "__main__":
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
-
     updater.start_polling()
 
-    poll_channel = PollPublicChannel(
-        channel_link=channel_link,
-        message_limit=100
-    )
 
+    poll_channel = PollPublicChannel()
 
     # perform authentication
     auth_response = poll_channel.authenticate(
@@ -178,5 +174,8 @@ if __name__ == "__main__":
     elif auth_code == 5:  # flood error
         exit()
 
-    poll_channel.poll_channel()
+    poll_channel.poll_channel(
+        channel_link=channel_link, 
+        message_limit=100
+    )
     updater.idle()

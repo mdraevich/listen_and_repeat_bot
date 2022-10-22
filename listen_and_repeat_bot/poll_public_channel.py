@@ -11,52 +11,11 @@ from telethon import errors
 class PollPublicChannel():
 
 
-    def __init__(self, channel_link, message_limit=10):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-        self.channel_link = channel_link
-        self.message_limit = message_limit
-        self.messages = []
+        self.channels = {}
         self.client = None
-
-
-    @property
-    def channel_link(self):
-        return self._channel_link
-
-
-    @channel_link.setter
-    def channel_link(self, value):
-        if isinstance(value, str):
-            self._channel_link = value
-        else:
-            raise ValueError
-
-
-    @property
-    def message_limit(self):
-        return self._message_limit
-
-
-    @message_limit.setter
-    def message_limit(self, value):
-        if isinstance(value, int) and value > 0:
-            self._message_limit = value
-        else:
-            raise ValueError
-
-
-    @property
-    def messages(self):
-        return self._messages
-
-
-    @messages.setter
-    def messages(self, value):
-        if isinstance(value, list):
-            self._messages = value
-        else:
-            raise ValueError
 
 
     def authenticate(self, phone, api_id, api_hash):
@@ -129,8 +88,20 @@ class PollPublicChannel():
         self.logger.info(f"Successfully signed in")
         return 0
 
+    def get_channel_posts(self, channel_id):
+        """
+        function returns:
+            telethon.helpers.TotalList - messages for channel_id
+            None - if no data is found for channel_id
+        """
 
-    def poll_channel(self):
+        if channel_id in self.channels:
+            return self.channels[channel_id]
+        else:
+            return None
+
+
+    def poll_channel(self, channel_id, message_limit=100):
         """
         function returns a tuple:
             (0,) - polling is successfull
@@ -138,9 +109,9 @@ class PollPublicChannel():
             (5, seconds: int) - flood error, wait for <seconds>
         """
         try:
-            self.messages = self.client.get_messages(
-                                        self.channel_link,
-                                        limit=self.message_limit)
+            self.channels[channel_id] = self.client.get_messages(
+                                        channel_link,
+                                        limit=message_limit)
 
             self.logger.info(f"Polling is done successfully, "
                              f"got {len(self.messages)} posts")
