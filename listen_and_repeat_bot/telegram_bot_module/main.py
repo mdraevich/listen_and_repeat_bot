@@ -1,11 +1,12 @@
 import os
 import time
+import json
 import random
 import getpass
 import logging
+import urllib.request
 from difflib import SequenceMatcher
 
-from telethon.tl.patched import Message 
 from telegram.ext import (
     Updater,
     CommandHandler,
@@ -23,8 +24,6 @@ from telegram import (
 from progress_db import ProgressDatabase
 from question_db import QuestionDatabase
 from progress_queue_library import ProgressQueue, ProgressQueueRandom
-
-from poll_public_channel import PollPublicChannel
 
 
 SIMILARITY_REQUIRED = 0.8
@@ -50,6 +49,23 @@ progress_db = ProgressDatabase(queue_class=ProgressQueueRandom)
 question_db = QuestionDatabase()
 
 
+def update_question_db():
+    contents = urllib.request.urlopen("http://localhost:8080/data").read()
+    data = json.loads(contents)
+
+    for channel in data["channels"]:
+        channel_id = channel["channel_id"]
+
+        question_db.create_channel(channel_id)
+
+        question_db.set_channel_metadata(channel_id, 
+                                        "channel_name", 
+                                        channel["name"])
+        question_db.parse_channel_posts(
+            channel_id,
+            posts = channel["data"]
+        )
+
 
 def get_similarity(user_answer, correct_answer):
     return SequenceMatcher(None, user_answer, correct_answer).ratio()
@@ -68,6 +84,9 @@ def start(update, context):
 
 
 def send_phrase_to_learn(user_id):
+    # temporary solution
+    update_question_db()
+
     exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
     if exit_code != 0:
         return ERROR_MESSAGE
@@ -81,7 +100,7 @@ def send_phrase_to_learn(user_id):
         return ERROR_MESSAGE
 
     queue_obj.update_questions(
-        question_db.get_question_ids(channel_link)
+        question_db.get_question_ids(channel_id)
     )
 
     question_id = queue_obj.next_question()
@@ -110,7 +129,7 @@ def check_translation(update, context):
                            user_id, channel_id)
     question_id = queue_obj.current_question()
 
-    question = question_db.get_question_by_id(channel_link, question_id)
+    question = question_db.get_question_by_id(channel_id, question_id)
     correct_answers = question["answers"]
 
 
@@ -146,9 +165,10 @@ def reset_learning_progress():
 
 def set_channel_to_learn(update, context):
     buttons = [
-        [InlineKeyboardButton(text=channel["name"], 
-                              callback_data=channel["channel_id"])]
-        for channel in get_channels() 
+        [InlineKeyboardButton(
+            text=question_db.get_channel_metadata(channel_id, "channel_name"), 
+            callback_data=channel_id)]
+        for channel_id in question_db.list_all_channels()
     ]
     keyboard = InlineKeyboardMarkup(buttons)
 
@@ -172,39 +192,14 @@ def inline_callbacks(update, context):
                               text=ERROR_MESSAGE)
 
 
-
-
-
-
 def show_learning_progress():
     pass
-
-def get_channels():
-    return [
-        {
-            "name": "Listen & Repeat | Phrases",
-            "channel_id": "https://t.me/listen_repeat_phrases",
-            "polling_interval": "120",
-            "message_limit": "100"
-        },
-        {
-            "name": "Listen & Repeat | Test",
-            "channel_id": "https://t.me/listen_repeat_phrases",
-            "polling_interval": "120",
-            "message_limit": "100"
-        }
-    ]
-
 
 
 if __name__ == "__main__":
 
-    phone = os.environ.get("PHONE", None)
     api_key = os.environ.get("BOT_API_KEY", None)
-    api_id = os.environ.get("API_ID", None)
-    api_hash = os.environ.get("API_HASH", None)
-    channel_link = get_channels()[0]["channel_id"]
-
+    update_question_db()
 
     updater = Updater(api_key)
 
@@ -216,47 +211,5 @@ if __name__ == "__main__":
                                           check_translation))
     updater.start_polling()
 
-
-    poll_channel = PollPublicChannel()
-
-    # perform authentication
-    auth_response = poll_channel.authenticate(
-                        phone=phone,api_id=api_id, api_hash=api_hash)
-    auth_code = auth_response[0]
-
-    if auth_code == 0:  # already authenticated 
-        pass
-
-    elif auth_code == 1:  # phone confirmation is needed
-        phone_auth_response = poll_channel.confirm_phone(
-                                    phone, code=input("Enter code: "))
-        phone_auth_code = phone_auth_response[0]
-
-        if phone_auth_code == 0:  # authenticated, success
-            pass
-        
-        elif phone_auth_code == 1:  # cloud password is needed
-            poll_channel.confirm_cloud_password(
-                password=getpass.getpass("Enter 2FA password: "))
-        
-        elif phone_auth_code == 10:  # phone is not registered
-            exit()
-
-    elif auth_code == 5:  # flood error
-        exit()
-
-    poll_channel.poll_channel(
-        channel_id=channel_link, 
-        message_limit=100
-    )
-    question_db.create_channel(channel_link)
-    question_db.parse_channel_posts(
-        channel_link,
-        posts = [ 
-            post.message
-            for post in poll_channel.get_channel_posts(channel_link) 
-            if isinstance(post, Message) 
-        ]
-    )
 
     updater.idle()
