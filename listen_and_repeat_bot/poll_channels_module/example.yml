@@ -1,0 +1,7 @@
+channels:
+
+  - name:                           # str  - user-friendly channel's name
+    channel_id:                     # str  - channel's link or username 
+    polling_interval:               # int  - how often poll the channel
+    message_limit:                  # int  - max number of messages to retrieve
+    private:                        # bool - show channel in public list or now
