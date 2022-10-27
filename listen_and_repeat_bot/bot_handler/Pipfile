@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 python-telegram-bot = "*"
 pyyaml = "*"
+pytest = "*"
 
 [dev-packages]
 

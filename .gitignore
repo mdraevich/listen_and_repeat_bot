@@ -2,3 +2,5 @@
 *.session
 *.session-journal
 config.yml
+__pycache__
+.pytest_cache

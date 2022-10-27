@@ -85,7 +85,7 @@ class PollPublicChannel():
     def confirm_cloud_password(self, password):
         self.client.sign_in(password=password)
         self.logger.info(f"Successfully signed in")
-        return 0
+        return (0,)
 
 
     def get_channel_posts(self, channel_id):
