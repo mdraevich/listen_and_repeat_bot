@@ -4,7 +4,8 @@ run-name: Execute pytest directory for each module in the repo
 on: 
   push:
     branches:
-      - test_actions
+      - main
+
 
 jobs:
 
