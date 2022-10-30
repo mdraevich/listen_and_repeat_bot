@@ -6,9 +6,10 @@ name = "pypi"
 [packages]
 python-telegram-bot = "*"
 pyyaml = "*"
-pytest = "*"
 
 [dev-packages]
+pytest = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.8"

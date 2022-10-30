@@ -31,10 +31,6 @@ class PollPublicChannel():
                                    before sending a new request 
         """
 
-        if isinstance(self.client, TelegramClient) and\
-                      self.client.is_connected():
-           self.client.disconnect()
-
         self.client = TelegramClient(phone, api_id, api_hash)
 
         try:

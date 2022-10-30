@@ -10,6 +10,8 @@ pyyaml = "*"
 
 [dev-packages]
 pytest = "*"
+pylint = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.8"

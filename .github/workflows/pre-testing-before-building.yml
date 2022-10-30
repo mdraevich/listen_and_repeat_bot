@@ -1,0 +1,59 @@
+name: Pre-testing before building Docker
+run-name: Execute pytest directory for each module in the repo
+
+on: 
+  push:
+    branches:
+      - test_actions
+
+jobs:
+
+  pylint-testing:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+          cache: pipenv
+      - run: pip install pipenv
+
+      - name: prepare poll_channels
+        working-directory: ./listen_and_repeat_bot/poll_channels
+        run: |
+          pipenv install --dev
+          pipenv run pylint *.py
+
+      - name: prepare bot_handler
+        working-directory: ./listen_and_repeat_bot/bot_handler
+        run: |
+          pipenv install --dev
+          pipenv run pylint *.py
+
+
+
+  unit-testing:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+          cache: pipenv
+      - run: pip install pipenv
+
+      - name: test poll_channels
+        working-directory: ./listen_and_repeat_bot/poll_channels
+        run: |
+          pipenv install --dev
+          PYTHONPATH=. pipenv run pytest
+
+      - name: test bot_handler
+        working-directory: ./listen_and_repeat_bot/bot_handler
+        run: |
+          pipenv install --dev
+          PYTHONPATH=. pipenv run pytest
