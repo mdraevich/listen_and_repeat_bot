@@ -1,10 +1,12 @@
 import os
+import sys
 import time
 import json
 import random
 import getpass
 import logging
-import urllib.request
+
+from urllib import request, error
 from difflib import SequenceMatcher
 
 from telegram.ext import (
@@ -40,7 +42,8 @@ Feel free to contact me @mdraevich.
 """
 
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
@@ -50,12 +53,14 @@ question_db = QuestionDatabase()
 
 
 def update_question_db():
-    contents = urllib.request.urlopen("http://localhost:8080/data").read()
-    data = json.loads(contents)
+    try:
+        contents = request.urlopen(poll_channel_url).read()
+        data = json.loads(contents)
+    except (ConnectionError, error.URLError) as exc:
+        return (False, 0)
 
     for channel in data["channels"]:
         channel_id = channel["channel_id"]
-
         question_db.create_channel(channel_id)
 
         question_db.set_channel_metadata(channel_id, 
@@ -63,8 +68,9 @@ def update_question_db():
                                         channel["name"])
         question_db.update_channel_posts(
             channel_id,
-            channel["data"]
-        )
+            channel["data"])
+
+    return (True, len(data["channels"]))
 
 
 def get_similarity(user_answer, correct_answer):
@@ -164,6 +170,9 @@ def reset_learning_progress():
 
 
 def set_channel_to_learn(update, context):
+    # temporary solution
+    update_question_db()
+
     buttons = [
         [InlineKeyboardButton(
             text=question_db.get_channel_metadata(channel_id, "channel_name"), 
@@ -199,6 +208,17 @@ def show_learning_progress():
 if __name__ == "__main__":
 
     api_key = os.environ.get("BOT_API_KEY", None)
+    poll_channel_url = os.environ.get("POLL_CHANNELS_URL", None)
+
+    if api_key is None:
+        print("specify BOT_API_KEY variable")
+        sys.exit(1)
+
+    if poll_channel_url is None:
+        print("specify POLL_CHANNELS_URL variable")
+        sys.exit(1)
+
+
     update_question_db()
 
     updater = Updater(api_key)
