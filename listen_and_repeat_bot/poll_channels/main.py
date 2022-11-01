@@ -18,6 +18,33 @@ logger = logging.getLogger(__name__)
 
 routes = web.RouteTableDef()
 
+
+def parse_posts(posts):
+    data = []
+    for post in posts:
+        message_parts = [ line.strip() for line in post.split("\n") ]
+        
+        if len(message_parts) < 2:
+            logger.warning(f"Message is ignored due to incorrect "
+                                f"format, {post[:20]}")
+            continue
+
+        question = message_parts[0].lower()
+        answers = [ 
+                    answer.strip().lower()
+                    for answer in message_parts[1].split("/")]
+        examples = [
+                        example.strip()
+                        for example in message_parts[2:]]
+
+        data.append({
+            "question": question,
+            "answers": answers,
+            "examples": examples
+        })
+    return data
+
+
 @routes.get('/data')
 async def index_page(request):
     data = {"channels": []}
@@ -31,7 +58,7 @@ async def index_page(request):
         ]
         channel_data = {
             **channel_opts,
-            "data": posts
+            "data": parse_posts(posts)
         }
         data["channels"].append(channel_data)
 

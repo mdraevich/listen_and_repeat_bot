@@ -61,9 +61,9 @@ def update_question_db():
         question_db.set_channel_metadata(channel_id, 
                                         "channel_name", 
                                         channel["name"])
-        question_db.parse_channel_posts(
+        question_db.update_channel_posts(
             channel_id,
-            posts = channel["data"]
+            channel["data"]
         )
 
 
@@ -210,6 +210,4 @@ if __name__ == "__main__":
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
     updater.start_polling()
-
-
     updater.idle()

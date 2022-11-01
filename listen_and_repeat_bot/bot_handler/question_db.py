@@ -61,7 +61,7 @@ class QuestionDatabase():
             return False
 
 
-    def parse_channel_posts(self, channel_id, posts):
+    def update_channel_posts(self, channel_id, posts):
         """
         args:
             channel_id
@@ -80,22 +80,9 @@ class QuestionDatabase():
             return False
 
         for post in posts:
-            message_parts = [ line.strip() for line in post.split("\n") ]
-            
-            if len(message_parts) < 2:
-                self.logger.warning(f"Message is ignored due to incorrect "
-                                    f"format, {channel_id}: {post[:20]}")
-                continue
-
-            question = message_parts[0].lower()
-            answers = [ 
-                        answer.strip().lower()
-                        for answer in message_parts[1].split("/") 
-                      ]
-            examples = [
-                            example.strip()
-                            for example in message_parts[2:]
-                       ]
+            question = post["question"]
+            answers = post["answers"]
+            examples = post["examples"]
 
             # generate id from question, so question can't be duplicated in db
             try:
@@ -107,11 +94,8 @@ class QuestionDatabase():
                                       f"question={question} due to {e}")
                 continue
 
-            self.question_db[channel_id][self.QUESTIONS_KEY][question_id] = {
-                "question": question,
-                "answers": answers,
-                "examples": examples
-            }
+            self.question_db[channel_id]\
+                            [self.QUESTIONS_KEY][question_id] = {**post}
 
         return True
 
