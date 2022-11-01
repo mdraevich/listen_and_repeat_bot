@@ -1,11 +1,12 @@
 import os
-import yaml
+import sys
 import getpass
 import asyncio
 import logging
 
+import yaml
 from aiohttp import web
-from telethon.tl.patched import Message 
+from telethon.tl.patched import Message
 
 from poll_public_channel import PollPublicChannel
 
@@ -23,14 +24,14 @@ def parse_posts(posts):
     data = []
     for post in posts:
         message_parts = [ line.strip() for line in post.split("\n") ]
-        
+
         if len(message_parts) < 2:
             logger.warning(f"Message is ignored due to incorrect "
-                                f"format, {post[:20]}")
+                           f"format, {post[:20]}")
             continue
 
         question = message_parts[0].lower()
-        answers = [ 
+        answers = [
                     answer.strip().lower()
                     for answer in message_parts[1].split("/")]
         examples = [
@@ -50,11 +51,11 @@ async def index_page(request):
     data = {"channels": []}
 
     for channel_opts in config["channels"]:
-        posts = [ 
+        posts = [
             post.message
             for post in poll_controller.get_channel_posts(
                         channel_opts["channel_id"])
-            if isinstance(post, Message) 
+            if isinstance(post, Message)
         ]
         channel_data = {
             **channel_opts,
@@ -89,7 +90,7 @@ async def poll_channel_forever(poll_controller, config):
         channel_id = config["channel_id"]
         message_limit = config["message_limit"]
         polling_interval = config["polling_interval"]
-        
+
         await poll_controller.poll_channel(channel_id, message_limit)
         await asyncio.sleep(polling_interval)
 
@@ -110,11 +111,11 @@ def parse_config_file(filename):
     try:
         with open(filename, "r") as file:
             return yaml.safe_load(file)
-    except (yaml.YAMLError, OSError) as e:
-        if isinstance(e, OSError):
+    except (yaml.YAMLError, OSError) as exc:
+        if isinstance(exc, OSError):
             print("Cannot read configuration file, "
                   "check path and permissions")
-        if isinstance(e, yaml.YAMLError):
+        if isinstance(exc, yaml.YAMLError):
             print("Config file has incorrect format, "
                   "cannot parse config options")
         return None
@@ -127,7 +128,7 @@ def create_poll_channel_controller(phone, api_id, api_hash):
     auth_response = poll_channel.authenticate(
                         phone=phone,api_id=api_id, api_hash=api_hash)
     auth_code = auth_response[0]
-    if auth_code == 0:  # already authenticated 
+    if auth_code == 0:  # already authenticated
         pass
     elif auth_code == 1:  # phone confirmation is needed
         phone_auth_response = poll_channel.confirm_phone(
@@ -156,7 +157,7 @@ if __name__ == '__main__':
              os.environ.get("CONFIG_FILE", "config.yml"))
     if config is None:
         print("No correct config found, exiting")
-        exit(1)
+        sys.exit(1)
 
     poll_controller = create_poll_channel_controller(
         phone=phone,
@@ -169,7 +170,7 @@ if __name__ == '__main__':
     for channel_opts in config["channels"]:
         loop.create_task(
             poll_channel_forever(poll_controller, channel_opts))
-    
+
     try:
         loop.run_forever()
     except KeyboardInterrupt:

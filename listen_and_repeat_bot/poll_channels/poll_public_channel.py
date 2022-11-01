@@ -1,5 +1,3 @@
-import os
-import time
 import logging
 
 from telethon.sync import TelegramClient
@@ -23,39 +21,39 @@ class PollPublicChannel():
             phone - id for your account
             api_id - see at https://core.telegram.org/api/obtaining_api_id
             api_hash - see at https://core.telegram.org/api/obtaining_api_id
-        
+
         function returns a tuple:
             (0) - user is authenticated using cache
             (1) - user has to confirm phone by submitting code
             (5, seconds: int) - user has to wait for <seconds>
-                                   before sending a new request 
+                                   before sending a new request
         """
 
         self.client = TelegramClient(phone, api_id, api_hash)
 
         try:
             self.client.connect()
-            
+
             if self.client.is_user_authorized():
                 self.logger.info(f"User {phone} is authenticated using "
                                  f"cache: @{self.client.get_me().username}")
                 return (0,)
-            else:
-                self.logger.info(f"Send confirmation code to {phone}")
-                self.client.send_code_request(phone)
-                return (1,)
 
-        except errors.FloodWaitError as e:
+            self.logger.info(f"Send confirmation code to {phone}")
+            self.client.send_code_request(phone)
+            return (1,)
+
+        except errors.FloodWaitError as exc:
             self.logger.exception(f"Too much requests, wait for "
-                                  f"{e.seconds} second(s)!")
-            return (5, e.seconds)
+                                  f"{exc.seconds} second(s)!")
+            return (5, exc.seconds)
 
 
     def confirm_phone(self, phone, code):
         """
             function returns a tuple:
                 (0) - code is correct and user is authorized
-                (1) - 2FA authorization is enabled, provide password 
+                (1) - 2FA authorization is enabled, provide password
                         via PollPublicChannel.confirm_cloud_password method
                 (10) - cannot sign in using specified phone number
         """
@@ -66,16 +64,18 @@ class PollPublicChannel():
             return (0,)
 
         except (errors.SessionPasswordNeededError,
-                errors.PhoneNumberUnoccupiedError) as e:
-            if isinstance(e, errors.SessionPasswordNeededError):
+                errors.PhoneNumberUnoccupiedError) as exc:
+            if isinstance(exc, errors.SessionPasswordNeededError):
                 self.logger.info("Password is required to "
                                  "complete authorization")
                 return (1,)
 
-            if isinstance(e, errors.PhoneNumberUnoccupiedError):
+            if isinstance(exc, errors.PhoneNumberUnoccupiedError):
                 self.logger.exception(f"Cannot sign in using phone={phone}, "
                                       f"phone number is not registered")
                 return (10,)
+
+        return (None,)
 
 
     def confirm_cloud_password(self, password):
@@ -114,14 +114,14 @@ class PollPublicChannel():
                              f"{len(self.channels[channel_id])} posts")
             return (0,)
 
-        except (ConnectionError, errors.FloodWaitError) as e:
-            
-            if isinstance(e, ConnectionError):
+        except (ConnectionError, errors.FloodWaitError) as exc:
+
+            if isinstance(exc, ConnectionError):
                 self.logger.error("Network conntection Error, "
                                   "no messages received")
                 return (1,)
 
-            if isinstance(e, errors.FloodWaitError):
+            if isinstance(exc, errors.FloodWaitError):
                 self.logger.exception(f"Too much requests, wait for "
-                                      f"{e.seconds} second(s)!")
-                return (5, e.seconds)
+                                      f"{exc.seconds} second(s)!")
+                return (5, exc.seconds)
