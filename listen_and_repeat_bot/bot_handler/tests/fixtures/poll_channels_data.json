@@ -1,0 +1,911 @@
+{
+    "channels": [
+        {
+            "name": "Listen & Repeat | Phrases",
+            "channel_id": "listen_repeat_phrases",
+            "polling_interval": 300,
+            "message_limit": 100,
+            "private": false,
+            "data": [
+                {
+                    "question": "a contrived example",
+                    "answers": [
+                        "надуманный пример",
+                        "выдуманный пример"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "difference is subtle",
+                    "answers": [
+                        "разница незаметна",
+                        "различия незаметна"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "to hit a snag",
+                    "answers": [
+                        "столкнуться с проблемой",
+                        "наткнуться на препятствие"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "it would have been a shame",
+                    "answers": [
+                        "это было бы позором"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "flawlessly",
+                    "answers": [
+                        "безупречно",
+                        "безукоризненно"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "on occasion",
+                    "answers": [
+                        "время от времени",
+                        "изредка",
+                        "иногда"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "novice",
+                    "answers": [
+                        "новичок",
+                        "неопытный пользователь",
+                        "начинающий"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "endeavour",
+                    "answers": [
+                        "стремление",
+                        "старание",
+                        "усилие",
+                        "попытка"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "due diligence",
+                    "answers": [
+                        "должное усердие",
+                        "должная усмотрительность",
+                        "должная старательность"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "pursuit",
+                    "answers": [
+                        "преследование",
+                        "погоня",
+                        "стремление",
+                        "занятие"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "irascible",
+                    "answers": [
+                        "вспыльчивый",
+                        "раздражительный",
+                        "гневный"
+                    ],
+                    "examples": [
+                        "He is irascible and short-tempered."
+                    ]
+                },
+                {
+                    "question": "aspiration",
+                    "answers": [
+                        "устремления",
+                        "стремление"
+                    ],
+                    "examples": [
+                        "We believe in your aspirations."
+                    ]
+                },
+                {
+                    "question": "to intimidate",
+                    "answers": [
+                        "запугать",
+                        "устрашать",
+                        "испугать",
+                        "запугивать"
+                    ],
+                    "examples": [
+                        "Your money doesn't intimidate me.",
+                        "You come here to intimidate us, but you can't do it."
+                    ]
+                },
+                {
+                    "question": "fixtures",
+                    "answers": [
+                        "арматура",
+                        "приспособление",
+                        "крепление",
+                        "крепеж",
+                        "прибор"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "ambivalent",
+                    "answers": [
+                        "двойственное",
+                        "противоречивое",
+                        "неоднозначное",
+                        "двусмысленное"
+                    ],
+                    "examples": [
+                        "It's natural to feel ambivalent.",
+                        "Then he's deeply ambivalent."
+                    ]
+                },
+                {
+                    "question": "to brush up",
+                    "answers": [
+                        "освежить",
+                        "улучшить"
+                    ],
+                    "examples": [
+                        "You can brush up on your object-oriented programming with Python 3 Object-Oriented Programming.",
+                        "We're all going to have to brush up on our Italiano."
+                    ]
+                },
+                {
+                    "question": "ambiguity",
+                    "answers": [
+                        "двусмысленность",
+                        "двузначность",
+                        "неоднозначность",
+                        "неясность"
+                    ],
+                    "examples": [
+                        "It's all trickery and ambiguity.",
+                        "Her impulsive spirit cannot brook ambiguity."
+                    ]
+                },
+                {
+                    "question": "to switch out",
+                    "answers": [
+                        "подменить",
+                        "сменить",
+                        "поменять",
+                        "заменить"
+                    ],
+                    "examples": [
+                        "I said the curator to switch out the real one.",
+                        "Time to switch out the battery.",
+                        "Did you switch out the blade yet?",
+                        "He switched out the real painting for the fake one."
+                    ]
+                },
+                {
+                    "question": "a profound realization",
+                    "answers": [
+                        "глубокое осознание"
+                    ],
+                    "examples": [
+                        "It was on that trip that I had a profound realisation, one that would take 15 years to actually do anything about.",
+                        "I had a profound realization thanks to you, and it's... it seems kind of obvious and dumb, but I..."
+                    ]
+                },
+                {
+                    "question": "сonversely",
+                    "answers": [
+                        "наоборот",
+                        "напротив",
+                        "с другой стороны"
+                    ],
+                    "examples": [
+                        "Conversely, they might be useful to your application.",
+                        "Conversely, reality, co-opted by fiction, loses its value.",
+                        "Conversely, it could humanize them."
+                    ]
+                },
+                {
+                    "question": "semicolon",
+                    "answers": [
+                        "точка с запятой"
+                    ],
+                    "examples": [
+                        "Each statement is made up of a series of tokens and ends in a semicolon."
+                    ]
+                },
+                {
+                    "question": "whereas",
+                    "answers": [
+                        "в то время как",
+                        "поскольку",
+                        "хотя"
+                    ],
+                    "examples": [
+                        "Whereas you are a new man.",
+                        "Tuples are immutable, whereas lists can be modified.",
+                        "Pointers can represent arrays, whereas references avoid that ambiguity.",
+                        "Those copies are called follower replicas, whereas the main partition is called the leader replica."
+                    ]
+                },
+                {
+                    "question": "it can be tempting",
+                    "answers": [
+                        "может быть заманчиво",
+                        "может возникнуть соблазн"
+                    ],
+                    "examples": [
+                        "It can be tempting to try to cure debt with more debt.",
+                        "It can be tempting to think that there’s no morally decent way to accumulate that much wealth.",
+                        "Like many issues it can be tempting to look back at the old way of doing things with rose-tinted glasses."
+                    ]
+                },
+                {
+                    "question": "deceptively",
+                    "answers": [
+                        "обманчиво"
+                    ],
+                    "examples": [
+                        "The narrative is deceptively banal.",
+                        "It's a deceptively simple movie."
+                    ]
+                },
+                {
+                    "question": "to be susceptible to",
+                    "answers": [
+                        "быть восприимчивым к",
+                        "быть чувствительным к"
+                    ],
+                    "examples": [
+                        "All electrified railways are susceptible to ice.",
+                        "Babies are highly susceptible to cold stress."
+                    ]
+                },
+                {
+                    "question": "courtesy",
+                    "answers": [
+                        "вежливость",
+                        "любезность",
+                        "обходительность"
+                    ],
+                    "examples": [
+                        "I have simply called as a courtesy.",
+                        "Or is this just a courtesy call?"
+                    ]
+                },
+                {
+                    "question": "requisite",
+                    "answers": [
+                        "необходимый элемент",
+                        "необходимое",
+                        "нужное"
+                    ],
+                    "examples": [
+                        "Such caution is requisite in anyone who stands in the position of mentor."
+                    ]
+                },
+                {
+                    "question": "doable",
+                    "answers": [
+                        "выполнимо",
+                        "осуществимо"
+                    ],
+                    "examples": [
+                        "Do you really think this is doable?",
+                        "It's a delicate procedure but very doable.",
+                        "Tight, but doable."
+                    ]
+                },
+                {
+                    "question": "to carry out",
+                    "answers": [
+                        "осуществлять",
+                        "приводить в исполнение",
+                        "проводить",
+                        "выполнять"
+                    ],
+                    "examples": [
+                        "His job was to carry out her orders.",
+                        "You need to carry out a small investigation, discreet but thorough."
+                    ]
+                },
+                {
+                    "question": "to be at disposal",
+                    "answers": [
+                        "быть в распоряжении",
+                        "быть готовым"
+                    ],
+                    "examples": [
+                        "I am at your disposal, Mistress.",
+                        "My study is at your disposal - nobody shall interfere with you."
+                    ]
+                },
+                {
+                    "question": "ubiquitous",
+                    "answers": [
+                        "вездесущий",
+                        "повсеместный",
+                        "распространенный"
+                    ],
+                    "examples": [
+                        "Consider the ubiquitous cellphone.",
+                        "Another advantage of environment variables is that they are ubiquitous.",
+                        "His ubiquitous influence was felt by all the family."
+                    ]
+                },
+                {
+                    "question": "nitty-gritty details",
+                    "answers": [
+                        "мельчайшие детали",
+                        "мельчайшие подробности"
+                    ],
+                    "examples": [
+                        "It handles all the nitty- gritty details for you.",
+                        "The nitty gritty details are in the documentation.",
+                        "I'm not going to bore you with all the nitty gritty details of my 30-year career."
+                    ]
+                },
+                {
+                    "question": "notably",
+                    "answers": [
+                        "особенно",
+                        "заметно",
+                        "примечательно"
+                    ],
+                    "examples": [
+                        "A diet low in animal fat protects against potentially fatal diseases, notably diabetes.",
+                        "He notably enriched our knowledge of curves and surfaces."
+                    ]
+                },
+                {
+                    "question": "merely",
+                    "answers": [
+                        "просто",
+                        "лишь"
+                    ],
+                    "examples": [
+                        "It is merely an instinct which cannot be destroyed."
+                    ]
+                },
+                {
+                    "question": "on the verge of",
+                    "answers": [
+                        "на грани",
+                        "на пороге",
+                        "почти"
+                    ],
+                    "examples": [
+                        "Now he stands on the verge of greatness.",
+                        "You were on the verge of death."
+                    ]
+                },
+                {
+                    "question": "attitude",
+                    "answers": [
+                        "отношение",
+                        "подход",
+                        "позиция"
+                    ],
+                    "examples": [
+                        "Whatever gives you such a crazy attitude?",
+                        "I suppose I have an ambivalent attitude toward it."
+                    ]
+                },
+                {
+                    "question": "ambitious",
+                    "answers": [
+                        "амбициозный",
+                        "целеустремленный",
+                        "масштабный"
+                    ],
+                    "examples": [
+                        "These goals are very ambitious."
+                    ]
+                },
+                {
+                    "question": "to divert",
+                    "answers": [
+                        "направить",
+                        "отвлечь",
+                        "отвлекать",
+                        "отводить"
+                    ],
+                    "examples": [
+                        "There was no point in trying to divert her.",
+                        "To divert suspicion from himself, is it not so?"
+                    ]
+                },
+                {
+                    "question": "to push around",
+                    "answers": [
+                        "помыкать",
+                        "командовать"
+                    ],
+                    "examples": [
+                        "I'm not the math geek you used to push around.",
+                        "You can't push me around.",
+                        "Those countries are harder to push around."
+                    ]
+                },
+                {
+                    "question": "newscaster",
+                    "answers": [
+                        "ведущий",
+                        "комментатор",
+                        "диктор"
+                    ],
+                    "examples": [
+                        "It's that newscaster, isn't it?"
+                    ]
+                },
+                {
+                    "question": "retirement",
+                    "answers": [
+                        "отставка",
+                        "уход на пенсию",
+                        "выход на пенсию",
+                        "увольнение"
+                    ],
+                    "examples": [
+                        "Just 18 months away from retirement when he died.",
+                        "And he was so close to retirement."
+                    ]
+                },
+                {
+                    "question": "to gasp",
+                    "answers": [
+                        "внезапно вдохнуть",
+                        "ахнуть",
+                        "охнуть"
+                    ],
+                    "examples": [
+                        "Just point at me when you want me to gasp.",
+                        "Everyone on hand seemed to gasp."
+                    ]
+                },
+                {
+                    "question": "to insult",
+                    "answers": [
+                        "оскорбить",
+                        "обижать",
+                        "унижать"
+                    ],
+                    "examples": [
+                        "I'd find a reluctance to insult my father.",
+                        "I didn't mean to insult that... fool, and I've insulted him again."
+                    ]
+                },
+                {
+                    "question": "muffled voice",
+                    "answers": [
+                        "приглушенный голос"
+                    ],
+                    "examples": [
+                        "His muffled voice was disdainful.",
+                        "A muffled voice replied from behind the house."
+                    ]
+                },
+                {
+                    "question": "let's toast",
+                    "answers": [
+                        "давайте выпьем"
+                    ],
+                    "examples": [
+                        "Let's toast to you.",
+                        "Ah, let's toast to a good working environment, shall we?",
+                        "Well, let's toast to poor Captain Grimes."
+                    ]
+                },
+                {
+                    "question": "to cheer",
+                    "answers": [
+                        "подбодрить",
+                        "взбодрить",
+                        "веселить",
+                        "ликовать"
+                    ],
+                    "examples": [
+                        "So stop trying to cheer me up!",
+                        "I know you're depressed, so I brought someone to cheer you up.",
+                        "That supposed to cheer me up?"
+                    ]
+                },
+                {
+                    "question": "generous",
+                    "answers": [
+                        "щедрый",
+                        "великодушный",
+                        "благородный",
+                        "бескорыстный"
+                    ],
+                    "examples": [
+                        "Not over-scrupulous, probably, but easy to live with, reasonably generous, possibly kind.",
+                        "How generous!",
+                        "Well, I suppose that's very generous of him.",
+                        "You have a generous heart, madame."
+                    ]
+                },
+                {
+                    "question": "to picture",
+                    "answers": [
+                        "фотографировать",
+                        "изобразить",
+                        "представить",
+                        "представлять",
+                        "вообразить"
+                    ],
+                    "examples": [
+                        "Victoria tried to picture the young priest flying a helicopter.",
+                        "I was picturing something, like, this big.",
+                        "I don’t want you to picture something with a bird’s head and a fan of feathers."
+                    ]
+                },
+                {
+                    "question": "joy",
+                    "answers": [
+                        "радость",
+                        "веселье",
+                        "восторг",
+                        "удовольствие",
+                        "счастье"
+                    ],
+                    "examples": [
+                        "She could have shouted aloud with joy.",
+                        "Didn't they all preach the sacrifice of personal joy?",
+                        "He tried to talk himself into joy.",
+                        "But enough of my joy."
+                    ]
+                },
+                {
+                    "question": "to reflect upon",
+                    "answers": [
+                        "поразмыслить",
+                        "хорошо подумать",
+                        "обдумать"
+                    ],
+                    "examples": [
+                        "We hope they can take time to reflect upon the verdict.",
+                        "He has promised to review the situation and to reflect upon the vote.",
+                        "It was melancholy to reflect upon this single aspect of the rebellion."
+                    ]
+                },
+                {
+                    "question": "courage",
+                    "answers": [
+                        "отвага",
+                        "мужество",
+                        "смелость",
+                        "храбрость",
+                        "решительность"
+                    ],
+                    "examples": [
+                        "One thing the lad did not lack, and that was courage.",
+                        "Where's your courage?",
+                        "An act of courage and of sacrifice.",
+                        "I haven't the courage for that."
+                    ]
+                },
+                {
+                    "question": "to exhale",
+                    "answers": [
+                        "выдохнуть"
+                    ],
+                    "examples": [
+                        "You're gonna have to exhale sometime.",
+                        "Internally, I started to exhale.",
+                        "He exhaled heavily as they moved toward the entrance."
+                    ]
+                },
+                {
+                    "question": "to topple",
+                    "answers": [
+                        "свалить",
+                        "свергнуть",
+                        "опрокинуть",
+                        "повалить"
+                    ],
+                    "examples": [
+                        "You thought I might have come to topple your enemies, slay your dragons.",
+                        "They've been trying to topple your regime for years.",
+                        "Like enormous dominoes, the stacks began to topple, one after another."
+                    ]
+                },
+                {
+                    "question": "to malfunction",
+                    "answers": [
+                        "работать неправильно",
+                        "выйти из строя",
+                        "сломаться",
+                        "работать неисправно"
+                    ],
+                    "examples": [
+                        "The toxins in his blood are causing his brain to malfunction.",
+                        "Why does it cause my app to malfunction?"
+                    ]
+                },
+                {
+                    "question": "to keep it real",
+                    "answers": [
+                        "быть собой",
+                        "оставаться собой",
+                        "продолжать в том же духе"
+                    ],
+                    "examples": [
+                        "Whatever you do, keep it real."
+                    ]
+                },
+                {
+                    "question": "to have no clue",
+                    "answers": [
+                        "не иметь ни малейшего понятия",
+                        "не иметь представления",
+                        "не иметь понятия"
+                    ],
+                    "examples": [
+                        "I have no clue how to manage it.",
+                        "I have no clue what he was doing.",
+                        "They simply have no clue what to do about it.",
+                        "Have no clue who it was!"
+                    ]
+                },
+                {
+                    "question": "to blow a chance",
+                    "answers": [
+                        "упустить шанс",
+                        "потерять шанс"
+                    ],
+                    "examples": [
+                        "All you need to know is I blew my chance.",
+                        "So, I've completely blown my chances.",
+                        "Had I just blown all chances of ever seeing him again?"
+                    ]
+                },
+                {
+                    "question": "to get all that out the way",
+                    "answers": [
+                        "уяснить",
+                        "разобрать",
+                        "разобраться",
+                        "выяснить"
+                    ],
+                    "examples": [
+                        "Well, I'm glad we've gotten all that out of the way, and now we can just go on with our lives as normal.",
+                        "Once you got all that out of the way, you can start working on the fun stuff."
+                    ]
+                },
+                {
+                    "question": "to rent out",
+                    "answers": [
+                        "сдавать в аренду"
+                    ],
+                    "examples": [
+                        "We're going to rent out the apartment until we arrive back home.",
+                        "You rented out our conference room?"
+                    ]
+                },
+                {
+                    "question": "a cover letter",
+                    "answers": [
+                        "сопроводительное письмо"
+                    ],
+                    "examples": [
+                        "Tom, can you write me a cover letter?",
+                        "I always recommend a cover letter even if the employer doesn’t require one."
+                    ]
+                },
+                {
+                    "question": "to outline",
+                    "answers": [
+                        "наметить",
+                        "охарактеризовать",
+                        "очертить",
+                        "изложить",
+                        "описать"
+                    ],
+                    "examples": [
+                        "Are you willing to outline what you know about the operation?",
+                        "She outlined the case briefly.",
+                        "Assuming you truthfully and accurately needs to outline all the facts known to you on interesting court issue."
+                    ]
+                },
+                {
+                    "question": "to take heart",
+                    "answers": [
+                        "набраться мужества",
+                        "набраться уверенности"
+                    ],
+                    "examples": [
+                        "Take heart and go on trying!",
+                        "Take heart, you are not alone.",
+                        "It sounds like he likes you, though, so take heart."
+                    ]
+                },
+                {
+                    "question": "comprehensive",
+                    "answers": [
+                        "всеобъемливающий",
+                        "всесторонний",
+                        "комплексный"
+                    ],
+                    "examples": [
+                        "Take a look at paper — it describes a comprehensive list of actions in case of fire.",
+                        "I did a comprehensive background check."
+                    ]
+                },
+                {
+                    "question": "to be known to",
+                    "answers": [
+                        "быть известным",
+                        "быть знакомым"
+                    ],
+                    "examples": [
+                        "He's known to be a lone wolf — he always spends little time talking to someone.",
+                        "He was known to nearly all present; respected by most; and feared by many."
+                    ]
+                },
+                {
+                    "question": "to flesh out",
+                    "answers": [
+                        "конкретезировать",
+                        "уточнить"
+                    ],
+                    "examples": [
+                        "You've got to flesh out the goal of the project to begin.",
+                        "I ask him to flesh out the thought.",
+                        "But, even here, there are details he needs to flesh out."
+                    ]
+                },
+                {
+                    "question": "to endanger",
+                    "answers": [
+                        "подвергать опасности",
+                        "ставить под угрозу"
+                    ],
+                    "examples": [
+                        "Irresponsible politicians endanger the overall integrity of the world around us."
+                    ]
+                },
+                {
+                    "question": "it holds true",
+                    "answers": [
+                        "это справедливо"
+                    ],
+                    "examples": [
+                        "We're all meant to be dead. It holds true even for person who do its best to live forever.",
+                        "It holds true, maybe now more than ever.",
+                        "It also holds true whether or not a given opinion is offensive."
+                    ]
+                },
+                {
+                    "question": "a rule of thumb",
+                    "answers": [
+                        "правило хорошего тона",
+                        "практическое правило"
+                    ],
+                    "examples": [
+                        "It's a good rule of thumb for life.",
+                        "Just take it as a rule of thumb."
+                    ]
+                },
+                {
+                    "question": "whilst",
+                    "answers": [
+                        "в то время, как",
+                        "хотя"
+                    ],
+                    "examples": [
+                        "Whilst I have no confidence in the actions I perform I'll follow my goals anyway."
+                    ]
+                },
+                {
+                    "question": "to get attention",
+                    "answers": [
+                        "привлечь внимание"
+                    ],
+                    "examples": [
+                        "He makes up different impressive stories to get attention."
+                    ]
+                },
+                {
+                    "question": "to be about to",
+                    "answers": [
+                        "собираться",
+                        "намереваться",
+                        "быть готовым"
+                    ],
+                    "examples": [
+                        "I was about to go home before I saw you."
+                    ]
+                },
+                {
+                    "question": "alongside",
+                    "answers": [
+                        "помимо",
+                        "параллельно",
+                        "совместно"
+                    ],
+                    "examples": [
+                        "But alongside simplicity you've got to pay a lot."
+                    ]
+                },
+                {
+                    "question": "to commoditize",
+                    "answers": [
+                        "превратить в товар",
+                        "превратить в услугу"
+                    ],
+                    "examples": [
+                        "Commoditized people are outside the law."
+                    ]
+                },
+                {
+                    "question": "to establish a foothold",
+                    "answers": [
+                        "закрепиться",
+                        "основаться"
+                    ],
+                    "examples": [
+                        "I'm going to leave the country and make a try to establish a foothold in Poland."
+                    ]
+                },
+                {
+                    "question": "to take into account",
+                    "answers": [
+                        "принимать во внимание",
+                        "брать во внимание"
+                    ],
+                    "examples": [
+                        "We've got to take assets, profit and cash flow into account in order to estimate the success of a business."
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Слухаем мову | Сказы",
+            "channel_id": "true_belarusian_channel",
+            "polling_interval": 300,
+            "message_limit": 100,
+            "private": false,
+            "data": [
+                {
+                    "question": "дыван",
+                    "answers": [
+                        "ковер"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "шкарпэткі",
+                    "answers": [
+                        "носки"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "тэпцікі",
+                    "answers": [
+                        "тапочки"
+                    ],
+                    "examples": []
+                },
+                {
+                    "question": "карысны",
+                    "answers": [
+                        "полезный"
+                    ],
+                    "examples": [
+                        "У гэтым спадарожжы ты атрымаеш карысны для сябе вопыт."
+                    ]
+                }
+            ]
+        }
+    ]
+}
