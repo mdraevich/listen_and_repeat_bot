@@ -29,3 +29,23 @@ def test_question_db_update(poll_channels_data):
 
         assert len(questions_in_db) == len(questions_in_channel),\
                "Some questions are missed during importing"
+
+
+def test_question_db_export_and_import(poll_channels_data):
+    initial = QuestionDatabase()
+    restored = QuestionDatabase()
+
+    # create data to save
+    for channel in poll_channels_data["channels"]:
+        channel_id = channel["channel_id"]
+        channel_data = channel["data"]
+
+        initial.create_channel(channel_id)
+        initial.update_channel_posts(channel_id, channel_data)
+
+    restored.import_from_json(
+        data=initial.export_to_json())
+
+    # compare initial and restored
+    assert initial.question_db == restored.question_db,\
+           "Export & Import functions for QuestionDatabase do not work"

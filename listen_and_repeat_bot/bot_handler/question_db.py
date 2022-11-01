@@ -2,28 +2,28 @@ import json
 import hashlib
 import logging
 
-"""
-question_db = {
-    channel_id: {
-        channel_name: str
-        channel_description: str
-        channel_message_limit: int
-        channel_polling_interval: int
-        channel_is_private: bool
-        questions: {
-            question_id: {
-                question: value (str),
-                answers: value (set),
-                examples: value (list)
+
+
+class QuestionDatabase():
+    """
+    question_db = {
+        channel_id: {
+            channel_name: str
+            channel_description: str
+            channel_message_limit: int
+            channel_polling_interval: int
+            channel_is_private: bool
+            questions: {
+                question_id: {
+                    question: value (str),
+                    answers: value (set),
+                    examples: value (list)
+                }
             }
         }
     }
-}
-"""
-
-class QuestionDatabase():
+    """
     QUESTIONS_KEY = "questions"
-
 
     def __init__(self):
         self.question_db = {}
@@ -127,6 +127,11 @@ class QuestionDatabase():
         return json.dumps(self.question_db, indent=4, ensure_ascii=False)
 
 
-    def import_from_json(self):
-        pass
+    def import_from_json(self, data):
+        try:
+            self.question_db = json.loads(data)
+            return True
+        except JSONDecodeError as exc:
+            self.logger.exception("Failed to load question_db from JSON")
+            return False
 
