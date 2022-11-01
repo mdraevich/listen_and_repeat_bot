@@ -109,10 +109,10 @@ def send_phrase_to_learn(user_id):
     question = question_obj["question"]
     if len(question_obj["examples"]) > 0:
         example = random.choice(question_obj["examples"])
+        return f"{example}\n\n🤔 ... <b>{question}</b>?"
     else:
-        example = question
+        return f"🤔 ... <b>{question}</b>?"
 
-    return f"{example}\n\n🤔 ... <b>{question}</b>?"
 
 
 def check_translation(update, context):
