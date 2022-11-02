@@ -35,17 +35,18 @@ class PollPublicChannel():
             self.client.connect()
 
             if self.client.is_user_authorized():
-                self.logger.info(f"User {phone} is authenticated using "
-                                 f"cache: @{self.client.get_me().username}")
+                self.logger.info("User %s is authenticated using "
+                                 "cache: %s",
+                                 phone, self.client.get_me().username)
                 return (0,)
 
-            self.logger.info(f"Send confirmation code to {phone}")
+            self.logger.info("Send confirmation code to %s", phone)
             self.client.send_code_request(phone)
             return (1,)
 
         except errors.FloodWaitError as exc:
-            self.logger.exception(f"Too much requests, wait for "
-                                  f"{exc.seconds} second(s)!")
+            self.logger.exception("Too much requests, wait for "
+                                  "%s second(s)!", exc.seconds)
             return (5, exc.seconds)
 
 
@@ -60,7 +61,7 @@ class PollPublicChannel():
 
         try:
             self.client.sign_in(phone, code)
-            self.logger.info(f"Successfully signed in using phone={phone}")
+            self.logger.info("Successfully signed in using phone=%s", phone)
             return (0,)
 
         except (errors.SessionPasswordNeededError,
@@ -71,8 +72,8 @@ class PollPublicChannel():
                 return (1,)
 
             if isinstance(exc, errors.PhoneNumberUnoccupiedError):
-                self.logger.exception(f"Cannot sign in using phone={phone}, "
-                                      f"phone number is not registered")
+                self.logger.exception("Cannot sign in using phone=%s, "
+                                      "phone number is not registered", phone)
                 return (10,)
 
         return (None,)
@@ -80,7 +81,7 @@ class PollPublicChannel():
 
     def confirm_cloud_password(self, password):
         self.client.sign_in(password=password)
-        self.logger.info(f"Successfully signed in")
+        self.logger.info("Successfully signed in")
         return (0,)
 
 
@@ -109,9 +110,10 @@ class PollPublicChannel():
                                         channel_id,
                                         limit=message_limit)
 
-            self.logger.info(f"@{channel_id} has been polled "
-                             f"successfully, got "
-                             f"{len(self.channels[channel_id])} posts")
+            self.logger.info("@%s has been polled "
+                             "successfully, got "
+                             "%s posts",
+                             channel_id, len(self.channels[channel_id]))
             return (0,)
 
         except (ConnectionError, errors.FloodWaitError) as exc:
@@ -122,6 +124,6 @@ class PollPublicChannel():
                 return (1,)
 
             if isinstance(exc, errors.FloodWaitError):
-                self.logger.exception(f"Too much requests, wait for "
-                                      f"{exc.seconds} second(s)!")
+                self.logger.exception("Too much requests, wait for "
+                                      "%s second(s)!", exc.seconds)
                 return (5, exc.seconds)

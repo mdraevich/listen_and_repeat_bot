@@ -26,8 +26,8 @@ def parse_posts(posts):
         message_parts = [ line.strip() for line in post.split("\n") ]
 
         if len(message_parts) < 2:
-            logger.warning(f"Message is ignored due to incorrect "
-                           f"format, {post[:20]}")
+            logger.warning("Message is ignored due to incorrect "
+                           "format, %s", post[:20])
             continue
 
         question = message_parts[0].lower()
