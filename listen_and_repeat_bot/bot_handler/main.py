@@ -28,6 +28,9 @@ from question_db import QuestionDatabase
 from progress_queue_library import ProgressQueue, ProgressQueueRandom
 
 
+QUESTIONS_DB_FILE = "./data/questions.db.json"
+USERS_DB_FILE = "./data/users.db.json"
+
 SIMILARITY_REQUIRED = 0.8
 ERROR_MESSAGE = "⚠️ Server error, contact @mdraevich"
 HELLO_MESSAGE = """
@@ -52,6 +55,27 @@ progress_db = ProgressDatabase(queue_class=ProgressQueueRandom)
 question_db = QuestionDatabase()
 
 
+def save_data():
+    db_list = [
+        (question_db, QUESTIONS_DB_FILE)]
+
+    for obj, filename in db_list:
+        with open(filename, "w") as file:
+            file.write(obj.export_to_json())
+            logger.info("saved %s bytes to %s",
+                        sys.getsizeof(obj), filename)
+
+def restore_data():
+    db_list = [
+        (question_db, QUESTIONS_DB_FILE)]
+
+    for obj, filename in db_list:
+        with open(filename, "r") as file:
+            obj.import_from_json(file.read())
+            logger.info("restored %s bytes from %s",
+                        sys.getsizeof(obj), filename)
+
+
 def update_question_db():
     try:
         contents = request.urlopen(poll_channel_url).read()
@@ -69,7 +93,7 @@ def update_question_db():
         question_db.update_channel_posts(
             channel_id,
             channel["data"])
-
+    save_data()
     return (True, len(data["channels"]))
 
 
@@ -219,6 +243,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
+    restore_data()
     update_question_db()
 
     updater = Updater(api_key)

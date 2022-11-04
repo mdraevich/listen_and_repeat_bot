@@ -5,3 +5,6 @@ config.yml
 __pycache__
 .pytest_cache
 /bot_examples
+
+*.db.*
+*.db
