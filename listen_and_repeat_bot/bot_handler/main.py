@@ -54,26 +54,30 @@ logger = logging.getLogger(__name__)
 progress_db = ProgressDatabase(queue_class=ProgressQueueRandom)
 question_db = QuestionDatabase()
 
+db_list = [
+    (question_db, QUESTIONS_DB_FILE),
+    (progress_db, USERS_DB_FILE)]
+
 
 def save_data():
-    db_list = [
-        (question_db, QUESTIONS_DB_FILE)]
-
     for obj, filename in db_list:
         with open(filename, "w") as file:
             file.write(obj.export_to_json())
             logger.info("saved %s bytes to %s",
                         sys.getsizeof(obj), filename)
 
-def restore_data():
-    db_list = [
-        (question_db, QUESTIONS_DB_FILE)]
 
+def restore_data():
     for obj, filename in db_list:
-        with open(filename, "r") as file:
-            obj.import_from_json(file.read())
-            logger.info("restored %s bytes from %s",
-                        sys.getsizeof(obj), filename)
+        try:
+            with open(filename, "r") as file:
+                obj.import_from_json(file.read())
+                logger.info("restored %s bytes from %s",
+                            sys.getsizeof(obj), filename)
+
+        except FileNotFoundError as exc:
+            logger.warning("Cannot find filename=%s to restore data",
+                           filename)
 
 
 def update_question_db():
@@ -102,7 +106,7 @@ def get_similarity(user_answer, correct_answer):
 
 
 def start(update, context):
-    user_id = update.message.from_user.id
+    user_id = str(update.message.from_user.id)
 
     if progress_db.create_user(user_id):
         update.message.reply_text(HELLO_MESSAGE, 
@@ -146,7 +150,7 @@ def send_phrase_to_learn(user_id):
 
 
 def check_translation(update, context):
-    user_id = update.message.from_user.id
+    user_id = str(update.message.from_user.id)
     user_answer = update.message.text.lower()
 
     exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
@@ -210,7 +214,7 @@ def set_channel_to_learn(update, context):
 
 
 def inline_callbacks(update, context):
-    user_id = update.callback_query.from_user.id
+    user_id = str(update.callback_query.from_user.id)
     channel_id = update.callback_query.data
 
     update.callback_query.answer()

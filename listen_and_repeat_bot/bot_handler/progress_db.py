@@ -1,3 +1,4 @@
+import json
 import logging
 
 """
@@ -137,9 +138,40 @@ class ProgressDatabase():
 
 
     def export_to_json(self):
-        pass
+        # self.progress_db is not JSON serializable
+        # => create its copy with converted ProgressQueue obj
+
+        duplicated_db = {}
+        for user_id in self.progress_db:
+            duplicated_db[user_id] = {}
+            
+            for key, value in self.progress_db[user_id].items():
+                if key == self.CUR_CHANNEL_KEY:
+                    # save current channel id
+                    duplicated_db[user_id][key] = value
+                else:
+                    # it's ProgressQueue successor
+                    duplicated_db[user_id][key] = value.get_progress()
+        
+        # now object is serializable
+        return json.dumps(duplicated_db)
 
 
-    def import_from_json(self):
-        pass
+    def import_from_json(self, data):
+        # go through restored object and convert
+        # dict object to ProgressQueue
 
+        restored_db = json.loads(data)
+        for user_id in restored_db:
+            self.progress_db[user_id] = {}
+
+            for key, value in restored_db[user_id].items():
+                if key == self.CUR_CHANNEL_KEY:
+                    # save current channel id
+                    self.progress_db[user_id][key] = value
+                else:
+                    # it's ProgressQueue successor
+                    self.progress_db[user_id][key] = self.queue_class()
+                    self.progress_db[user_id][key].set_progress(value)
+
+        return True
