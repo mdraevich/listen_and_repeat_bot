@@ -6,6 +6,7 @@ import random
 import getpass
 import logging
 
+import yaml
 from urllib import request, error
 from difflib import SequenceMatcher
 
@@ -57,6 +58,21 @@ question_db = QuestionDatabase()
 db_list = [
     (question_db, QUESTIONS_DB_FILE),
     (progress_db, USERS_DB_FILE)]
+
+
+
+def parse_answers_file(filename):
+    try:
+        with open(filename, "r") as file:
+            return yaml.safe_load(file)
+    except (yaml.YAMLError, OSError) as exc:
+        if isinstance(exc, OSError):
+            print("Cannot read configuration file, "
+                  "check path and permissions")
+        if isinstance(exc, yaml.YAMLError):
+            print("Config file has incorrect format, "
+                  "cannot parse config options")
+        return None
 
 
 def save_data():
@@ -237,6 +253,11 @@ if __name__ == "__main__":
 
     api_key = os.environ.get("BOT_API_KEY", None)
     poll_channel_url = os.environ.get("POLL_CHANNELS_URL", None)
+    answers_file = os.environ.get("ANSWERS_FILE", None)
+
+    if answers_file is None:
+        print("specify ANSWERS_FILE variable")
+        sys.exit(1)
 
     if api_key is None:
         print("specify BOT_API_KEY variable")
@@ -246,6 +267,8 @@ if __name__ == "__main__":
         print("specify POLL_CHANNELS_URL variable")
         sys.exit(1)
 
+
+    answers = parse_answers_file(answers_file)["answers"]
 
     restore_data()
     update_question_db()
