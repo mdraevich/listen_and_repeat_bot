@@ -34,16 +34,6 @@ USERS_DB_FILE = "./data/users.db.json"
 
 SIMILARITY_REQUIRED = 0.8
 ERROR_MESSAGE = "⚠️ Server error, contact @mdraevich"
-HELLO_MESSAGE = """
-Hello ✌️
-This bot can help you to improve your language vocabulary.
-In order to begin, select a channel to learn phrases from.
-
-You can also publish your own channel to read phrases from.
-Feel free to contact me @mdraevich.
-
-📦 <b>To select a channel</b>: /learn 
-"""
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -123,17 +113,19 @@ def get_similarity(user_answer, correct_answer):
 
 def start(update, context):
     user_id = str(update.message.from_user.id)
+    lang_code = str(update.message.from_user.language_code)
+    answer = answers["hello"][lang_code]
 
     if progress_db.create_user(user_id):
-        update.message.reply_text(HELLO_MESSAGE, 
+        update.message.reply_text(answer, 
                                   parse_mode=ParseMode.HTML)
         logger.info(f"new user has been created, user_id={user_id}")
     else:
-        update.message.reply_text(send_phrase_to_learn(user_id),
+        update.message.reply_text(send_phrase_to_learn(user_id, lang_code),
                                   parse_mode=ParseMode.HTML)
 
 
-def send_phrase_to_learn(user_id):
+def send_phrase_to_learn(user_id, lang_code):
     # temporary solution
     update_question_db()
 
@@ -141,7 +133,7 @@ def send_phrase_to_learn(user_id):
     if exit_code != 0:
         return ERROR_MESSAGE
     if channel_id is None:
-        return f"Please, select a channel by /learn"
+        return answers["hello"][lang_code]
 
     exit_code, queue_obj = progress_db.get_channel_progress(
                            user_id, channel_id)
@@ -167,13 +159,14 @@ def send_phrase_to_learn(user_id):
 
 def check_translation(update, context):
     user_id = str(update.message.from_user.id)
+    lang_code = str(update.message.from_user.language_code)
     user_answer = update.message.text.lower()
 
     exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
     if exit_code != 0:
         return ERROR_MESSAGE
     if channel_id is None:
-        return f"Please, select a channel by /learn"
+        return answers["hello"][lang_code]
 
     exit_code, queue_obj = progress_db.get_channel_progress(
                            user_id, channel_id)
@@ -205,7 +198,7 @@ def check_translation(update, context):
         # answer is incorrect
         update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
 
-    update.message.reply_text(send_phrase_to_learn(user_id),
+    update.message.reply_text(send_phrase_to_learn(user_id, lang_code),
                               parse_mode=ParseMode.HTML)
 
 
@@ -217,6 +210,10 @@ def set_channel_to_learn(update, context):
     # temporary solution
     update_question_db()
 
+    lang_code = str(update.message.from_user.language_code)
+    answer = answers["select_channel"][lang_code]
+
+
     buttons = [
         [InlineKeyboardButton(
             text=question_db.get_channel_metadata(channel_id, "channel_name"), 
@@ -225,21 +222,23 @@ def set_channel_to_learn(update, context):
     ]
     keyboard = InlineKeyboardMarkup(buttons)
 
-    update.message.reply_text("Select from the following", 
+    update.message.reply_text(answer, 
                               reply_markup=keyboard)
 
 
 def inline_callbacks(update, context):
     user_id = str(update.callback_query.from_user.id)
+    lang_code = str(update.callback_query.from_user.language_code)
+    answer = answers["channel_selected"][lang_code]
+
     channel_id = update.callback_query.data
+
 
     update.callback_query.answer()
     
     progress_db.create_channel_progress(user_id, channel_id)
     if progress_db.set_current_channel_of_user(user_id, channel_id):
-        update.callback_query.edit_message_text(
-                              text="Your channel is updated.\n"
-                                   "Run /start")
+        update.callback_query.edit_message_text(text=answer)
     else:
         update.callback_query.edit_message_text(
                               text=ERROR_MESSAGE)
