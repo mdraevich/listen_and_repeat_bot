@@ -113,8 +113,8 @@ class ProgressQueuePriorityRandom(ProgressQueueRandom):
 
     def next_question(self):
         choices = random.choices(
-                       population=self.progress.keys(),
-                       weights=self.progress.values(),
+                       population=list(self.progress.keys()),
+                       weights=[100-el for el in self.progress.values()],
                        k=1)
         if choices:
             self.current_question_id = choices[0]
@@ -125,5 +125,5 @@ class ProgressQueuePriorityRandom(ProgressQueueRandom):
 
     def change_question_progress(self, question_id, change):
         self.progress[question_id] += int(change * 10)
-        self.progress = max(self.progress, 0)
-        self.progress = min(self.progress, 100)
+        self.progress[question_id] = max(self.progress[question_id], 0)
+        self.progress[question_id] = min(self.progress[question_id], 100)

@@ -26,7 +26,11 @@ from telegram import (
 
 from progress_db import ProgressDatabase
 from question_db import QuestionDatabase
-from progress_queue_library import ProgressQueue, ProgressQueueRandom
+from progress_queue_library import (
+    ProgressQueue, 
+    ProgressQueueRandom,
+    ProgressQueuePriorityRandom
+)
 
 
 QUESTIONS_DB_FILE = "./data/questions.db.json"
@@ -42,7 +46,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-progress_db = ProgressDatabase(queue_class=ProgressQueueRandom)
+progress_db = ProgressDatabase(queue_class=ProgressQueuePriorityRandom)
 question_db = QuestionDatabase()
 
 db_list = [
@@ -192,10 +196,18 @@ def check_translation(update, context):
 
     if is_user_answer_correct:
         # answer is correct
+        queue_obj.change_question_progress(question_id, 1)
+        logger.debug("Change question=%s/%s/%s progress by value=%s", 
+                     user_id, channel_id, question_id, 1)
+        
         update.message.reply_text(f"✅ {' / '.join(formatted_answers)}",
                                   parse_mode=ParseMode.HTML)
     else:
         # answer is incorrect
+        queue_obj.change_question_progress(question_id, -1)
+        logger.debug("Change question=%s/%s/%s progress by value=%s", 
+                     user_id, channel_id, question_id, -1)
+        
         update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
 
     update.message.reply_text(send_phrase_to_learn(user_id, lang_code),
