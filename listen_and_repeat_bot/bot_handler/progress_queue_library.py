@@ -48,7 +48,7 @@ class ProgressQueue(dict):
         returns:
             question_id (str) - question_id of currently active question
         """
-        raise NotImplemented
+        return self.current_question_id
 
     def get_progress(self):
         """
@@ -98,12 +98,31 @@ class ProgressQueueRandom(ProgressQueue):
                                    list(self.progress.keys()))
         return self.current_question_id
 
-    def current_question(self):
-        return self.current_question_id
-
     def change_question_progress(self, change):
         return None
 
     def reset(self):
         for key in self.progress.keys():
             self.progress[key] = 0
+
+
+class ProgressQueuePriorityRandom(ProgressQueueRandom):
+    """
+    """
+
+    def next_question(self):
+        choices = random.choices(
+                       population=self.progress.keys(),
+                       weights=self.progress.values(),
+                       k=1)
+        if choices:
+            self.current_question_id = choices[0]
+        else:
+            self.current_question_id = None
+
+        return self.current_question_id
+
+    def change_question_progress(self, question_id, change):
+        self.progress[question_id] += int(change * 10)
+        self.progress = max(self.progress, 0)
+        self.progress = min(self.progress, 100)
