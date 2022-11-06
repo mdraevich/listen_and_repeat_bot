@@ -33,8 +33,10 @@ from progress_queue_library import (
 )
 
 
-QUESTIONS_DB_FILE = "./data/questions.db.json"
-USERS_DB_FILE = "./data/users.db.json"
+QUESTIONS_DB_FILE = os.environ.get("QUESTIONS_DB_FILE", 
+                                   "./data/questions.db.json")
+USERS_DB_FILE = os.environ.get("USERS_DB_FILE",
+                               "./data/users.db.json")
 SIMILARITY_REQUIRED = 0.8
 
 

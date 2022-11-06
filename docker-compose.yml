@@ -9,6 +9,8 @@ services:
       BOT_API_KEY: ${BOT_API_KEY}
       POLL_CHANNELS_URL: ${POLL_CHANNELS_URL}
       ANSWERS_FILE: ${ANSWERS_FILE}
+      QUESTIONS_DB_FILE: ${QUESTIONS_DB_FILE}
+      USERS_DB_FILE: ${USERS_DB_FILE}
     volumes:
       - type: volume
         source: data-storage
