@@ -65,3 +65,7 @@ answers:
       Public channels are polled online and used as sources for questions.
           
 
+  error:
+    ru: ⚠️ Что-то сломалось, напишите @mdraevich
+    be: ⚠️ Нешта зламалася, напішыце @mdraevich
+    en: ⚠️ Server error, contact @mdraevich

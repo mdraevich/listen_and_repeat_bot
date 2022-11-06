@@ -35,9 +35,8 @@ from progress_queue_library import (
 
 QUESTIONS_DB_FILE = "./data/questions.db.json"
 USERS_DB_FILE = "./data/users.db.json"
-
 SIMILARITY_REQUIRED = 0.8
-ERROR_MESSAGE = "⚠️ Server error, contact @mdraevich"
+
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -135,7 +134,7 @@ def send_phrase_to_learn(user_id, lang_code):
 
     exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
     if exit_code != 0:
-        return ERROR_MESSAGE
+        return answers["error"][lang_code]
     if channel_id is None:
         return answers["hello"][lang_code]
 
@@ -143,7 +142,7 @@ def send_phrase_to_learn(user_id, lang_code):
                            user_id, channel_id)
 
     if exit_code != 0:
-        return ERROR_MESSAGE
+        return answers["error"][lang_code]
 
     queue_obj.update_questions(
         question_db.get_question_ids(channel_id)
@@ -168,7 +167,7 @@ def check_translation(update, context):
 
     exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
     if exit_code != 0:
-        return ERROR_MESSAGE
+        return answers["error"][lang_code]
     if channel_id is None:
         return answers["hello"][lang_code]
 
@@ -253,7 +252,7 @@ def inline_callbacks(update, context):
         update.callback_query.edit_message_text(text=answer)
     else:
         update.callback_query.edit_message_text(
-                              text=ERROR_MESSAGE)
+                              text=answers["error"][lang_code])
 
 
 def show_learning_progress():
