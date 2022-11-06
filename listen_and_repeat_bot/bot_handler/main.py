@@ -261,9 +261,39 @@ def inline_callbacks(update, context):
                               text=answers["error"][lang_code])
 
 
-def show_learning_progress():
-    pass
+def show_learning_progress(update, context):
+    user_id = str(update.message.from_user.id)
+    lang_code = str(update.message.from_user.language_code)
 
+    exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
+    if exit_code != 0:
+        update.message.reply_text(answers["error"][lang_code],
+                  parse_mode=ParseMode.HTML)
+    if channel_id is None:
+        update.message.reply_text(answers["hello"][lang_code],
+                          parse_mode=ParseMode.HTML)
+
+    exit_code, queue_obj = progress_db.get_channel_progress(
+                           user_id, channel_id)
+
+    good_amount = medium_amount = low_amount = ignored_amount = 0
+    for value in queue_obj.get_progress().values():
+        if value <= 20:
+            low_amount += 1
+        if 20 <= value <= 60:
+            medium_amount += 1
+        if 60 <= value:
+            good_amount += 1
+    progress_answer = answers["show_progress"][lang_code].format(
+            question_db.get_channel_metadata(channel_id, "channel_name"),
+            good_amount, medium_amount,
+            low_amount, ignored_amount)
+    update.message.reply_text(progress_answer,
+                              parse_mode=ParseMode.HTML)
+
+
+        
+                
 
 if __name__ == "__main__":
 
@@ -295,6 +325,7 @@ if __name__ == "__main__":
     updater.dispatcher.add_handler(CallbackQueryHandler(inline_callbacks))
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_handler))
+    dispatcher.add_handler(CommandHandler("progress", show_learning_progress))
     dispatcher.add_handler(CommandHandler("learn", set_channel_to_learn))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
