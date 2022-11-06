@@ -1,0 +1,37 @@
+services:
+
+  telegram-bot-handler:
+    build:
+      context: ./listen_and_repeat_bot/bot_handler
+    restart: always
+    environment:
+      PYTHONPATH: .
+      BOT_API_KEY: ${BOT_API_KEY}
+      POLL_CHANNELS_URL: ${POLL_CHANNELS_URL}
+      ANSWERS_FILE: ${ANSWERS_FILE}
+    volumes:
+      - type: volume
+        source: data-storage
+        target: /listen_and_repeat_bot/listen_and_repeat_bot/bot_handler/data
+    networks:
+      internal-network:
+
+  telegram-poll-channels:
+    build:
+      context: ./listen_and_repeat_bot/poll_channels
+    restart: always
+    environment:
+      PYTHONPATH: .
+      LISTEN_ADDRESS: ${LISTEN_ADDRESS}
+      PHONE: ${PHONE}
+      API_ID: ${API_ID}
+      API_HASH: ${API_HASH}
+    networks:
+      internal-network:
+
+
+volumes:
+  data-storage:
+
+networks:
+  internal-network:
