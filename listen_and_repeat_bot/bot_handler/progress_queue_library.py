@@ -70,9 +70,10 @@ class ProgressQueue(dict):
         """
         self.progress = progress
 
-    def change_question_progress(self, change):
+    def change_question_progress(self, question_id, change):
         """
         args:
+            question_id (str) - question_id to change progress of
             change (float) - value between [-1, 1] that represents
                              how to change progress of question_id
                              set to -1 to decrease progress 
@@ -98,8 +99,8 @@ class ProgressQueueRandom(ProgressQueue):
                                    list(self.progress.keys()))
         return self.current_question_id
 
-    def change_question_progress(self, change):
-        return None
+    def change_question_progress(self, question_id, change):
+        pass
 
     def reset(self):
         for key in self.progress.keys():
