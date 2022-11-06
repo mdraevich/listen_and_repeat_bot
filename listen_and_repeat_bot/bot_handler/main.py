@@ -114,6 +114,12 @@ def get_similarity(user_answer, correct_answer):
     return SequenceMatcher(None, user_answer, correct_answer).ratio()
 
 
+def help_handler(update, context):
+    user_id = str(update.message.from_user.id)
+    lang_code = str(update.message.from_user.language_code)
+    update.message.reply_text(answers["help"][lang_code],
+                              parse_mode=ParseMode.HTML)
+
 def start(update, context):
     user_id = str(update.message.from_user.id)
     lang_code = str(update.message.from_user.language_code)
@@ -288,6 +294,7 @@ if __name__ == "__main__":
     dispatcher = updater.dispatcher
     updater.dispatcher.add_handler(CallbackQueryHandler(inline_callbacks))
     dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help_handler))
     dispatcher.add_handler(CommandHandler("learn", set_channel_to_learn))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
