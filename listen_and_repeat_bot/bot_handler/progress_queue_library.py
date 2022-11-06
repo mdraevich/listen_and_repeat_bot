@@ -5,45 +5,81 @@ import random
 
 class ProgressQueue(dict):
     """
-        class contains all required
-        methods for ProgressQueue successors
+    class contains all required
+    methods for ProgressQueue successors
 
-        self.current_question_id - current question_id user
-                                   have to provide an answer 
-        self.progress - dict of <question_id>: <progress_value>
-                        <progress_value> should be between 0-100
-                        0 - user knows nothing; 100 - user knows excellent
+    self.current_question_id - current question_id user
+                               have to provide an answer 
+    self.progress - dict of <question_id>: <progress_value>
+                    <progress_value> should be between 0-100
+                    0 - user knows nothing; 100 - user knows excellent
     """
 
     def __init__(self):
-        # must have objects
+        """
+        define required objects for class instance
+        """
         self.progress = {}
         self.current_question_id = None  
 
     def reset(self):
+        """
+        should reset a progress for all questions
+        """
         raise NotImplemented
 
     def update_questions(self, questions):
         """
         args:
-            questions - list of question IDs to 
-                        add in progress object 
+            questions - list of question IDs (str) to 
+                        add in progress queue object 
         """
-
         raise NotImplemented
 
     def next_question(self):
+        """
+        returns:
+            question_id (str) - next question_id to ask a user
+        """
         raise NotImplemented
 
     def current_question(self):
+        """
+        returns:
+            question_id (str) - question_id of currently active question
+        """
         raise NotImplemented
 
     def get_progress(self):
+        """
+        returns:
+            question_progress (dict) - pairs of 
+                                       <question_id> (str), <value> (int)
+                                       where value is between 0-100 and
+                                       represents how a user knows question
+        """
         return self.progress
 
     def set_progress(self, progress):
+        """
+        args:
+            question_progress (dict) - pairs of 
+                                       <question_id> (str), <value> (int)
+                                       where value is between 0-100 and
+                                       represents how a user knows question
+        """
         self.progress = progress
 
+    def change_question_progress(self, change):
+        """
+        args:
+            change (float) - value between [-1, 1] that represents
+                             how to change progress of question_id
+                             set to -1 to decrease progress 
+                             set to 1 to increase progress
+        """
+
+        raise NotImplemented
 
 
 class ProgressQueueRandom(ProgressQueue):
@@ -65,3 +101,9 @@ class ProgressQueueRandom(ProgressQueue):
     def current_question(self):
         return self.current_question_id
 
+    def change_question_progress(self, change):
+        return None
+
+    def reset(self):
+        for key in self.progress.keys():
+            self.progress[key] = 0
