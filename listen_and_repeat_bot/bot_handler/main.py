@@ -29,7 +29,8 @@ from question_db import QuestionDatabase
 from progress_queue_library import (
     ProgressQueue, 
     ProgressQueueRandom,
-    ProgressQueuePriorityRandom
+    ProgressQueuePriorityRandom,
+    ProgressQueuePriorityRandomLimited
 )
 
 
@@ -47,7 +48,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-progress_db = ProgressDatabase(queue_class=ProgressQueuePriorityRandom)
+progress_db = ProgressDatabase(
+                queue_class=ProgressQueuePriorityRandomLimited)
 question_db = QuestionDatabase()
 
 db_list = [
