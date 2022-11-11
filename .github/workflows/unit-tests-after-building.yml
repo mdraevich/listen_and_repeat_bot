@@ -31,7 +31,7 @@ jobs:
 
       - run: |
           MY_VAR=$("${{ secrets.TEST_ENCODED }}" | base64 --decode)
-          cat $MY_VAR
+          echo $MY_VAR
 
 
       # - run: |
