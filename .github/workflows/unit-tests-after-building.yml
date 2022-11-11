@@ -1,0 +1,58 @@
+name: Build using Docker Compose & Run unit tests on images
+
+on: 
+  push:
+    branches:
+      - main
+      - add-new-workflows
+
+
+jobs:
+
+
+  build-and-test:
+    runs-on: ubuntu-20.04
+    env:
+
+      PHONE: ${{ secrets.PHONE }}
+      API_ID: ${{ secrets.API_ID }}
+      API_HASH: ${{ secrets.API_HASH }}
+      BOT_API_KEY: ${{ secrets.BOT_API_KEY }}
+
+      PYTHONPATH: .
+      LISTEN_ADDRESS: 0.0.0.0:8080
+      POLL_CHANNELS_URL: http://telegram-poll-channels:8080/data
+      ANSWERS_FILE: ./answers.yml
+      USERS_DB_FILE: /listen_and_repeat_bot/listen_and_repeat_bot/bot_handler/data/users.db.json
+      QUESTIONS_DB_FILE: /listen_and_repeat_bot/listen_and_repeat_bot/bot_handler/data/questions.db.json
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - env:
+        run: |
+          docker compose up -d
+
+
+  # unit-testing:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+      
+  #     - uses: actions/setup-python@v4
+  #       with:
+  #         python-version: 3.8
+  #         cache: pipenv
+  #     - run: pip install pipenv
+
+  #     - name: test poll_channels
+  #       working-directory: ./listen_and_repeat_bot/poll_channels
+  #       run: |
+  #         pipenv install --dev
+  #         PYTHONPATH=. pipenv run pytest
+
+  #     - name: test bot_handler
+  #       working-directory: ./listen_and_repeat_bot/bot_handler
+  #       run: |
+  #         pipenv install --dev
+  #         PYTHONPATH=. pipenv run pytest
