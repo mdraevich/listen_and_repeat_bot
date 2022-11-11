@@ -32,7 +32,7 @@ jobs:
       - run: |
           mkdir secrets
           echo "${{ secrets.LISTEN_AND_REPEAT_SESSION_ENCODED }}" | base64 --decode > ./secrets/listen_and_repeat.session
-          echo "${{ secrets.CHANNEL_CONFIG }}" > ./secrets/config.yml
+          echo -n "${{ secrets.CHANNEL_CONFIG }}" > ./secrets/config.yml
 
 
       - run: |
