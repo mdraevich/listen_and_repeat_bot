@@ -1,4 +1,4 @@
-name: Pre-testing before building Docker
+name: Check code quality
 
 on: 
   push:
@@ -8,25 +8,27 @@ on:
 
 jobs:
 
-  unit-testing:
+  pylint-testing:
+    strategy:
+      fail-fast: false
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      
+
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8
           cache: pipenv
       - run: pip install pipenv
 
-      - name: test poll_channels
+      - name: prepare poll_channels
         working-directory: ./listen_and_repeat_bot/poll_channels
         run: |
           pipenv install --dev
-          PYTHONPATH=. pipenv run pytest
+          pipenv run pylint *.py
 
-      - name: test bot_handler
+      - name: prepare bot_handler
         working-directory: ./listen_and_repeat_bot/bot_handler
         run: |
           pipenv install --dev
-          PYTHONPATH=. pipenv run pytest
+          pipenv run pylint *.py
