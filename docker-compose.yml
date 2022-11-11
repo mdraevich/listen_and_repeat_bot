@@ -28,6 +28,8 @@ services:
       PHONE: ${PHONE}
       API_ID: ${API_ID}
       API_HASH: ${API_HASH}
+    volumes:
+      - ./secrets/listen_and_repeat.session:/listen_and_repeat_bot/${PHONE}.session
     networks:
       internal-network:
 
