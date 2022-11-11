@@ -29,8 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - env:
-        run: |
+      - run: |
           docker compose up -d
 
 
