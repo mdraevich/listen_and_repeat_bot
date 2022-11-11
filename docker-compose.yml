@@ -15,6 +15,7 @@ services:
       - type: volume
         source: data-storage
         target: /listen_and_repeat_bot/listen_and_repeat_bot/bot_handler/data
+      - ./secrets/config.yml:/listen_and_repeat_bot/config.yml
     networks:
       internal-network:
 
