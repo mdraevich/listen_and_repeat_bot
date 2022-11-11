@@ -30,10 +30,10 @@ jobs:
       - uses: actions/checkout@v3
 
       - run: |
-          echo -n "${{ secrets.TEST_ENCODED }}" | base64 --decode > test.txt
-          cat test.txt
+          MY_VAR=$("${{ secrets.TEST_ENCODED }}" | base64 --decode)
+          cat $MY_VAR
 
-          
+
       # - run: |
       #     docker compose up -d
 
