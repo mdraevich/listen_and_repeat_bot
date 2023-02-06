@@ -8,7 +8,7 @@
 
 ### Create authentication file
 
-1. Prepare `./secrets` directory if it doesn't exist:
+1. Prepare `./secrets` directory if not exists:
 ```shell
 # in the project root directory
 
@@ -16,21 +16,19 @@ mkdir -p secrets
 ```
 
 
-2. Prepare environment file with required parameters:
+2. Prepare environment file with required parameters if not exists:
 ```shell
 # in the project root directory
 
-cd session_handler/
-echo "API_ID=$API_ID" > .env
+echo "PHONE=$PHONE" >> .env
+echo "API_ID=$API_ID" >> .env
 echo "API_HASH=$API_HASH" >> .env
-echo "SESSION_NAME=$SESSION_NAME" >> .env
 ```
 
 3. Follow the authentication process to create a session file:
 ```shell
 # in the project root directory
 
-cd session_handler/
 pipenv install
-pipenv run python3 main.py
+pipenv run python3 session_handler/main.py
 ```

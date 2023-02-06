@@ -4,6 +4,7 @@ to let you mount the file to a docker container
 """
 
 import os
+import sys
 import getpass
 
 from telegram_authenticate import TelegramAuthenticate
@@ -61,12 +62,18 @@ def interactive_authentication():
 
 
 if __name__ == '__main__':
-    phone = input("Enter phone: ")
 
+    phone = os.environ.get("PHONE", None)
     api_id = os.environ.get("API_ID", None)
     api_hash = os.environ.get("API_HASH", None)
-    session_name = os.environ.get("SESSION_NAME", "Listen & Repeat")
+    session_name = os.environ.get("SESSION_NAME",
+                                  "Listen & Repeat")
+    session_filename = os.environ.get("SESSION_FILENAME",
+                                      "secrets/listen_and_repeat.session")
 
-    session_filename = f"../secrets/{phone}.session"
+    if None in (phone, api_id, api_hash):
+        print("Not all required parameters are provided. "
+              "Refer to README.md for more details.")
+        sys.exit(0)
 
     interactive_authentication()
