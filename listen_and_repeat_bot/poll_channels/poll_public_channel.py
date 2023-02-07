@@ -25,8 +25,6 @@ class PollPublicChannel():
         function returns a tuple:
             (0)               - user is authenticated using cache
             (1)               - user has to confirm phone by submitting code
-            (5, seconds: int) - user has to wait for <seconds>
-                                before sending a new request
         """
 
         self.client = TelegramClient(session_filename, api_id, api_hash)
