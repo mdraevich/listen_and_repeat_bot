@@ -34,34 +34,16 @@ jobs:
           echo "${{ secrets.LISTEN_AND_REPEAT_SESSION_ENCODED }}" | base64 --decode > ./secrets/listen_and_repeat.session
           echo -n "${{ secrets.CHANNEL_CONFIG }}" > ./secrets/config.yml
 
-
       - run: |
           docker compose up -d
           sleep 15
 
       - run: |
           docker compose logs
-
-
-  # unit-testing:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: actions/checkout@v3
       
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: 3.8
-  #         cache: pipenv
-  #     - run: pip install pipenv
+      - run: |
+          poll_channel_restarts=$(docker inspect listen_and_repeat_bot-telegram-poll-channels-1 --format '{{ .RestartCount }}')
+          bot_handler_restarts=docker inspect listen_and_repeat_bot_telegram-bot-handler     --format '{{ .RestartCount }}'
 
-  #     - name: test poll_channels
-  #       working-directory: ./listen_and_repeat_bot/poll_channels
-  #       run: |
-  #         pipenv install --dev
-  #         PYTHONPATH=. pipenv run pytest
-
-  #     - name: test bot_handler
-  #       working-directory: ./listen_and_repeat_bot/bot_handler
-  #       run: |
-  #         pipenv install --dev
-  #         PYTHONPATH=. pipenv run pytest
+          test $poll_channel_restarts -ne 0 && exit 1
+          test $bot_handler_restarts -ne 0 && exit 1
