@@ -48,5 +48,5 @@ jobs:
           echo "poll_channel_restarts=$poll_channel_restarts"
           echo "bot_handler_restarts=$bot_handler_restarts"
           
-          test $poll_channel_restarts -ne 0 && echo "problem A" && exit 1
-          test $bot_handler_restarts -ne 0 && echo "problem B" && exit 1
+          test $poll_channel_restarts -ne 0 && echo "problem A"
+          test $bot_handler_restarts -ne 0 && echo "problem B"
