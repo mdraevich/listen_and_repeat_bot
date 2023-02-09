@@ -42,4 +42,13 @@ jobs:
           docker compose logs
       
       - run: |
-          test "0" -eq "0" && echo 123 
+          poll_channel_restarts=$(docker inspect listen_and_repeat_bot-telegram-poll-channels-1 --format '{{ .RestartCount }}')
+          bot_handler_restarts=$(docker inspect listen_and_repeat_bot-telegram-bot-handler-1 --format '{{ .RestartCount }}')
+
+          echo "poll_channel_restarts=$poll_channel_restarts"
+          echo "bot_handler_restarts=$bot_handler_restarts"
+
+          test $poll_channel_restarts -ne 0 && exit 1
+          test $bot_handler_restarts -ne 0 && exit 1
+          
+          exit 0 
