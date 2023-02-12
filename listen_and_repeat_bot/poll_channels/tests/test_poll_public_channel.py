@@ -15,8 +15,7 @@ def test_initial():
 @pytest.mark.parametrize("connect_status,expected", [
     (True, (0,)), 
     (False, (1,)), 
-    (errors.FloodWaitError(Mock()), (5,)),
-    (RuntimeError(), (RuntimeError,)),
+    (RuntimeError(), (RuntimeError,))
 ])
 def test_telegram_authentication(connect_status, expected, mocker):
     obj = PollPublicChannel()
@@ -31,20 +30,11 @@ def test_telegram_authentication(connect_status, expected, mocker):
     mocker.patch("poll_public_channel.TelegramClient", telegram_mocker)
 
     try:
-        auth_response = obj.authenticate("375000000000", "api_id", "api_hash")
+        auth_response = obj.authenticate(
+                                        "listen_and_repeat.session",
+                                        "api_id",
+                                        "api_hash")
     except RuntimeError as exc:
         auth_response = (RuntimeError,)
 
     assert auth_response[0] == expected[0], "Failed"
-
-
-def test_telegram_cloud_password():
-    obj = PollPublicChannel()
-
-    # mocking telegram client
-    obj.client = Mock()
-    obj.client.sign_in.return_value = True
-
-    assert obj.confirm_cloud_password("password") == (0,), \
-           "Failed to pass cloud password"
-

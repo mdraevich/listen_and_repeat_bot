@@ -121,35 +121,29 @@ def parse_config_file(filename):
         return None
 
 
-def create_poll_channel_controller(phone, api_id, api_hash):
+def create_poll_channel_controller(session_filename, api_id, api_hash):
     poll_channel = PollPublicChannel()
 
     # perform authentication
     auth_response = poll_channel.authenticate(
-                        phone=phone,api_id=api_id, api_hash=api_hash)
-    auth_code = auth_response[0]
-    if auth_code == 0:  # already authenticated
-        pass
-    elif auth_code == 1:  # phone confirmation is needed
-        phone_auth_response = poll_channel.confirm_phone(
-                                    phone, code=input("Enter code: "))
-        phone_auth_code = phone_auth_response[0]
-        if phone_auth_code == 0:  # authenticated, success
-            pass
-        elif phone_auth_code == 1:  # cloud password is needed
-            poll_channel.confirm_cloud_password(
-                password=getpass.getpass("Enter 2FA password: "))
-        elif phone_auth_code == 10:  # phone is not registered
-            return None
-    elif auth_code == 5:  # flood error
+                        session_filename=session_filename,
+                        api_id=api_id,
+                        api_hash=api_hash)
+
+    if auth_response[0] == 0:
+        # successful authentication
+        return poll_channel
+    else:
+        # cannot authenticate using provided session file
         return None
-    return poll_channel
+
 
 
 if __name__ == '__main__':
-    phone = os.environ.get("PHONE", None)
+    session_filename = "listen_and_repeat.session"
     api_id = os.environ.get("API_ID", None)
     api_hash = os.environ.get("API_HASH", None)
+
     listen_address = os.environ.get("LISTEN_ADDRESS", None)
     host, port = parse_listen_address(listen_address)
 
@@ -160,10 +154,13 @@ if __name__ == '__main__':
         sys.exit(1)
 
     poll_controller = create_poll_channel_controller(
-        phone=phone,
+        session_filename=session_filename,
         api_id=api_id,
         api_hash=api_hash
     )
+    if poll_controller is None:
+        print("Cannot create poll controller, exiting")
+        sys.exit(1)
 
     loop = asyncio.get_event_loop()
     loop.create_task(run_http_server(routes, host, port))
