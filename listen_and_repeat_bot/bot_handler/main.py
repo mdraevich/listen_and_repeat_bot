@@ -205,17 +205,17 @@ def check_translation(update, context):
 
     if is_user_answer_correct:
         # answer is correct
-        queue_obj.change_question_progress(question_id, 1)
+        queue_obj.change_question_progress(question_id, max_similar_value * 25)
         logger.debug("Change question=%s/%s/%s progress by value=%s", 
-                     user_id, channel_id, question_id, 1)
+                     user_id, channel_id, question_id, max_similar_value * 25)
         
         update.message.reply_text(f"✅ {' / '.join(formatted_answers)}",
                                   parse_mode=ParseMode.HTML)
     else:
         # answer is incorrect
-        queue_obj.change_question_progress(question_id, -1)
+        queue_obj.change_question_progress(question_id, -35)
         logger.debug("Change question=%s/%s/%s progress by value=%s", 
-                     user_id, channel_id, question_id, -1)
+                     user_id, channel_id, question_id, -35)
         
         update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
 

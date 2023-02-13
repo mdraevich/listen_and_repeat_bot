@@ -131,7 +131,7 @@ class ProgressQueuePriorityRandom(ProgressQueueRandom):
         return self.current_question_id
 
     def change_question_progress(self, question_id, change):
-        self.progress[question_id] += int(change * 10)
+        self.progress[question_id] += int(change)
         self.progress[question_id] = max(self.progress[question_id], 0)
         self.progress[question_id] = min(self.progress[question_id], 100)
 
