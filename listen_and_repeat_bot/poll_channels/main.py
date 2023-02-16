@@ -1,8 +1,10 @@
+import re
 import os
 import sys
 import getpass
 import asyncio
 import logging
+import datetime
 
 import yaml
 from aiohttp import web
@@ -20,29 +22,17 @@ logger = logging.getLogger(__name__)
 routes = web.RouteTableDef()
 
 
-def parse_posts(posts):
+def parse_single_post(post_message, template):
     data = []
-    for post in posts:
-        message_parts = [ line.strip() for line in post.split("\n") ]
-
-        if len(message_parts) < 2:
-            logger.warning("Message is ignored due to incorrect "
-                           "format, %s", post[:20])
-            continue
-
-        question = message_parts[0].lower()
-        answers = [
-                    answer.strip().lower()
-                    for answer in message_parts[1].split("/")]
-        examples = [
-                        example.strip()
-                        for example in message_parts[2:]]
-
-        data.append({
-            "question": question,
-            "answers": answers,
-            "examples": examples
-        })
+    post_message_lines = post_message.split("\n")
+    for index in range(len(template)):
+        if index < len(post_message_lines):
+            matches = re.findall(template[index],
+                                 post_message_lines[index])
+            matches = [ match.strip() for match in matches ]
+            data.append(matches)
+        else:
+            data.append([])
     return data
 
 
@@ -50,16 +40,20 @@ def parse_posts(posts):
 async def index_page(request):
     data = {"channels": []}
 
-    for channel_opts in config["channels"]:
+    for channel_obj in config["channels"]:
         posts = [
-            post.message
+            {
+                "timestamp": post.date.timestamp(),
+                "matches": parse_single_post(post.message,
+                                             channel_obj["template"])
+            }
             for post in poll_controller.get_channel_posts(
-                        channel_opts["channel_id"])
+                        channel_obj["channel_id"])
             if isinstance(post, Message)
         ]
         channel_data = {
-            **channel_opts,
-            "data": parse_posts(posts)
+            **channel_obj,
+            "data": posts
         }
         data["channels"].append(channel_data)
 

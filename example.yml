@@ -1,7 +1,11 @@
 channels:
 
-  - name:                           # str  - user-friendly channel's name
-    channel_id:                     # str  - channel's link or username 
-    polling_interval:               # int  - how often poll the channel
-    message_limit:                  # int  - max number of messages to retrieve
-    private:                        # bool - show channel in public list or now
+  - name:                 # friendly name for channel
+    channel_id:           # url for channel
+    polling_interval:     # how often to poll channel
+    message_limit:        # how much messages returns
+    template:             # template dict describe list of regex, each regex is matched against appropriate line
+      - "^.*$"            # so 1st regex is matched against 1st line of message, 2nd regex against 2nd line, etc.
+      - "[^\/-]+"         # if message lines is less than regex amount then should return empty list for matches
+    tags:                 # dict of custom tags
+      private: false      # private tag is responsible to determine whether to show channel in public list or not
