@@ -15,30 +15,40 @@ class PollPublicChannel():
         self.client = None
 
 
-    def authenticate(self, session_filename, api_id, api_hash):
+    def authenticate(self, session_filename, api_id, api_hash, **kwargs):
         """
         function accepts args:
             session_filename - session filename for your account
             api_id           - see at https://core.telegram.org/api/obtaining_api_id
             api_hash         - see at https://core.telegram.org/api/obtaining_api_id
+            kwargs           - dict for additional parameters
+                session_name: str   - alias for a session in active sessions tab
 
         function returns a tuple:
-            (0)               - user is authenticated using cache
-            (1)               - user has to confirm phone by submitting code
+            (0)               - successfully authenticated
+            (1)               - fail to authenticate 
+            (5, seconds: int) - user has to wait for <seconds>
+                                before sending a new request
         """
 
-        self.client = TelegramClient(session_filename, api_id, api_hash)
-        self.client.connect()
+        self.client = TelegramClient(
+            session_filename, api_id, api_hash,
+            device_model=kwargs.get("session_name", "Listen & Repeat"))
 
-        if self.client.is_user_authorized():
-            self.logger.info("Successfully authenticated "
-                             "using session file")
-            return (0,)
+        try:
+            self.client.connect()
 
-        self.logger.info("Cannot sign in using provided session file")
-        return (1,)
+            if self.client.is_user_authorized():
+                self.logger.info("Successfully authenticated "
+                                 "using session file")
+                return (0,)
 
-
+            self.logger.info("Cannot sign in using provided session file")
+            return (1,)
+        except errors.FloodWaitError as exc:
+            self.logger.exception("Too much requests, wait for "
+                                  "%s second(s)!", exc.seconds)
+            return (5, exc.seconds)
 
 
     def get_channel_posts(self, channel_id):
@@ -75,8 +85,8 @@ class PollPublicChannel():
         except (ConnectionError, errors.FloodWaitError) as exc:
 
             if isinstance(exc, ConnectionError):
-                self.logger.error("Network conntection Error, "
-                                  "no messages received")
+                self.logger.exception("Network connection Error, "
+                                      "no messages received")
                 return (1,)
 
             if isinstance(exc, errors.FloodWaitError):

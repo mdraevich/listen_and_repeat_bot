@@ -43,7 +43,7 @@ class TelegramAuthenticate():
 
         self.client = TelegramClient(
             kwargs["filename"], api_id, api_hash,
-            device_model=kwargs["session_name"])
+            device_model=kwargs.get("session_name", "Listen & Repeat"))
 
         try:
             self.client.connect()

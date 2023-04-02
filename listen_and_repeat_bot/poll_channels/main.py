@@ -115,14 +115,16 @@ def parse_config_file(filename):
         return None
 
 
-def create_poll_channel_controller(session_filename, api_id, api_hash):
+def create_poll_channel_controller(session_filename, session_name,
+                                   api_id, api_hash):
     poll_channel = PollPublicChannel()
 
     # perform authentication
     auth_response = poll_channel.authenticate(
                         session_filename=session_filename,
                         api_id=api_id,
-                        api_hash=api_hash)
+                        api_hash=api_hash,
+                        session_name=session_name)
 
     if auth_response[0] == 0:
         # successful authentication
@@ -137,6 +139,8 @@ if __name__ == '__main__':
     session_filename = "listen_and_repeat.session"
     api_id = os.environ.get("API_ID", None)
     api_hash = os.environ.get("API_HASH", None)
+    session_name = os.environ.get("SESSION_NAME",
+                                  "Listen & Repeat")
 
     listen_address = os.environ.get("LISTEN_ADDRESS", None)
     host, port = parse_listen_address(listen_address)
@@ -149,6 +153,7 @@ if __name__ == '__main__':
 
     poll_controller = create_poll_channel_controller(
         session_filename=session_filename,
+        session_name=session_name,
         api_id=api_id,
         api_hash=api_hash
     )
