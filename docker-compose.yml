@@ -4,13 +4,16 @@ services:
     build:
       context: ./listen_and_repeat_bot/bot_handler
     restart: always
+    init: true
     environment:
       PYTHONPATH: .
+      TZ: ${TZ}
       BOT_API_KEY: ${BOT_API_KEY}
       POLL_CHANNELS_URL: ${POLL_CHANNELS_URL}
       ANSWERS_FILE: ${ANSWERS_FILE}
       QUESTIONS_DB_FILE: ${QUESTIONS_DB_FILE}
       USERS_DB_FILE: ${USERS_DB_FILE}
+      LOGLEVEL: ${LOGLEVEL}
     volumes:
       - type: volume
         source: data-storage
@@ -22,12 +25,16 @@ services:
     build:
       context: ./listen_and_repeat_bot/poll_channels
     restart: always
+    init: true
     environment:
       PYTHONPATH: .
+      TZ: ${TZ}
       LISTEN_ADDRESS: ${LISTEN_ADDRESS}
       PHONE: ${PHONE}
       API_ID: ${API_ID}
       API_HASH: ${API_HASH}
+      SESSION_NAME: ${SESSION_NAME}
+      LOGLEVEL: ${LOGLEVEL}
     volumes:
       - ./secrets/config.yml:/listen_and_repeat_bot/config.yml
       - ./secrets/listen_and_repeat.session:/listen_and_repeat_bot/listen_and_repeat.session
