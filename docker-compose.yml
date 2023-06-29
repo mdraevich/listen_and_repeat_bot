@@ -40,6 +40,8 @@ services:
       - ./secrets/listen_and_repeat.session:/listen_and_repeat_bot/listen_and_repeat.session
     networks:
       internal-network:
+    ports:
+      - "127.0.0.1:8080:8080"
 
 
 volumes:
