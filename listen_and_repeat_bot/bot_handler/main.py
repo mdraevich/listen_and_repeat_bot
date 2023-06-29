@@ -107,9 +107,20 @@ def update_question_db():
         question_db.set_channel_metadata(channel_id, 
                                         "channel_name", 
                                         channel["name"])
+
+        
+        formatted_data = []
+        for entry in channel["data"]:
+            formatted_entry = {
+                "question": entry["matches"][0][0],
+                "answers": entry["matches"][1],
+                "examples": [ el[0] for el in entry["matches"][2:] if len(el)]
+            }
+            formatted_data.append(formatted_entry)
+        
         question_db.update_channel_posts(
             channel_id,
-            channel["data"])
+            formatted_data)
     save_data()
     return (True, len(data["channels"]))
 
