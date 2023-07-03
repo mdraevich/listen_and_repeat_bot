@@ -32,6 +32,7 @@ from progress_queue_library import (
     ProgressQueuePriorityRandom,
     ProgressQueuePriorityRandomLimited
 )
+from parsers import parsers
 
 
 QUESTIONS_DB_FILE = os.environ.get("QUESTIONS_DB_FILE", 
@@ -108,14 +109,9 @@ def update_question_db():
                                         "channel_name", 
                                         channel["name"])
 
-        
         formatted_data = []
-        for entry in channel["data"]:
-            formatted_entry = {
-                "question": entry["matches"][0][0],
-                "answers": entry["matches"][1],
-                "examples": [ el[0] for el in entry["matches"][2:] if len(el)]
-            }
+        for entry in channel["posts"]:
+            formatted_entry = parsers.run(channel["tags"]["parser"])(entry["data"])
             formatted_data.append(formatted_entry)
         
         question_db.update_channel_posts(

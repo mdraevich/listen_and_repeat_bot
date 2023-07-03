@@ -22,19 +22,6 @@ logger = logging.getLogger(__name__)
 routes = web.RouteTableDef()
 
 
-def parse_single_post(post_message, template):
-    data = []
-    post_message_lines = post_message.split("\n")
-    for index in range(len(template)):
-        if index < len(post_message_lines):
-            matches = re.findall(template[index],
-                                 post_message_lines[index])
-            matches = [ match.strip() for match in matches ]
-            data.append(matches)
-        else:
-            data.append([])
-    return data
-
 
 @routes.get('/data')
 async def index_page(request):
@@ -44,8 +31,7 @@ async def index_page(request):
         posts = [
             {
                 "timestamp": post.date.timestamp(),
-                "matches": parse_single_post(post.message,
-                                             channel_obj["template"])
+                "data": post.message
             }
             for post in poll_controller.get_channel_posts(
                         channel_obj["channel_id"])
@@ -53,7 +39,7 @@ async def index_page(request):
         ]
         channel_data = {
             **channel_obj,
-            "data": posts
+            "posts": posts
         }
         data["channels"].append(channel_data)
 
