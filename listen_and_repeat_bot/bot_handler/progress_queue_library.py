@@ -46,6 +46,7 @@ class ProgressQueue(dict):
         """
         raise NotImplemented
 
+
     def ignore_question(self, question_id, ignore_ttl=self.DEFAULT_IGNORE_TTL):
         """
         args:
@@ -53,6 +54,27 @@ class ProgressQueue(dict):
             ignore_ttl (int) - number of questions to do not ask the question
         """
         self.ignored_questions[question_id] = ignore_ttl
+        self.progress.pop(question_id)
+
+    def is_ignored_question(self, question_id):
+        """
+        args:
+            question_id (str) - question_id to check rather ignored or not
+        returns:
+            True of False - if question_id should be ignored or not
+        """
+
+        return question_id in self.ignored_questions
+
+    def update_ignored_questions(self):
+        """
+        updates ttl value for all ignored questions
+        """
+        for question_id, value in self.ignored_questions.items():
+            if value <= 1:
+                self.ignored_questions.pop(question_id)
+            else:
+                self.ignored_questions[question_id] = value - 1
 
     def current_question(self):
         """
@@ -102,6 +124,8 @@ class ProgressQueueRandom(ProgressQueue):
 
     def update_questions(self, questions):
         for question_id in questions:
+            if self.is_ignored_question(question_id):
+                continue
             if question_id not in self.progress:
                 self.progress[question_id] = 0
 
