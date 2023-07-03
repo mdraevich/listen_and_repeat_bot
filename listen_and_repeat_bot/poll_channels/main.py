@@ -39,7 +39,7 @@ async def index_page(request):
         ]
         channel_data = {
             **channel_obj,
-            "data": posts
+            "posts": posts
         }
         data["channels"].append(channel_data)
 
