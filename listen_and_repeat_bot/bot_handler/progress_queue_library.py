@@ -15,8 +15,6 @@ class ProgressQueue(dict):
                     0 - user knows nothing; 100 - user knows excellent
     """
 
-    DEFAULT_IGNORE_TTL = 300
-
     def __init__(self):
         """
         define required objects for class instance
@@ -47,7 +45,7 @@ class ProgressQueue(dict):
         raise NotImplemented
 
 
-    def ignore_question(self, question_id, ignore_ttl=self.DEFAULT_IGNORE_TTL):
+    def ignore_question(self, question_id, ignore_ttl):
         """
         args:
             question_id (str) - question_id to ignore
@@ -189,6 +187,11 @@ class ProgressQueuePriorityRandomLimited(ProgressQueuePriorityRandom):
     def __init__(self):
         self.selected_subset = None
         super().__init__()
+
+
+    def ignore_question(self, question_id, ignore_ttl):
+        super().ignored_questions(questions, ignore_ttl)
+        self.selected_subset = None
 
 
     def _generate_subset(self):
