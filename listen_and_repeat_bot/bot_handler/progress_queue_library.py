@@ -15,11 +15,14 @@ class ProgressQueue(dict):
                     0 - user knows nothing; 100 - user knows excellent
     """
 
+    DEFAULT_IGNORE_TTL = 300
+
     def __init__(self):
         """
         define required objects for class instance
         """
         self.progress = {}
+        self.ignored_questions = {}
         self.current_question_id = None  
 
     def reset(self):
@@ -42,6 +45,14 @@ class ProgressQueue(dict):
             question_id (str) - next question_id to ask a user
         """
         raise NotImplemented
+
+    def ignore_question(self, question_id, ignore_ttl=self.DEFAULT_IGNORE_TTL):
+        """
+        args:
+            question_id (str) - question_id to ignore
+            ignore_ttl (int) - number of questions to do not ask the question
+        """
+        self.ignored_questions[question_id] = ignore_ttl
 
     def current_question(self):
         """
