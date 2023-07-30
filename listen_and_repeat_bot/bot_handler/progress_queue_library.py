@@ -84,7 +84,9 @@ class ProgressQueue(dict):
             question_id (str) - question_id to change progress of
             change (float) - value to add up to the question_id progress
         """
-        raise NotImplemented
+        self.progress[question_id] += int(change)
+        self.progress[question_id] = max(self.progress[question_id], 0)
+        self.progress[question_id] = min(self.progress[question_id], 100)
 
 
 class ProgressQueueRandom(ProgressQueue):
@@ -104,9 +106,6 @@ class ProgressQueueRandom(ProgressQueue):
         self.current_question_id = random.choice(
                                    list(self.progress.keys()))
         return self.current_question_id
-
-    def change_question_progress(self, question_id, change):
-        pass
 
     def reset(self):
         for key in self.progress.keys():
@@ -135,11 +134,6 @@ class ProgressQueuePriorityRandom(ProgressQueueRandom):
             self.current_question_id = None
 
         return self.current_question_id
-
-    def change_question_progress(self, question_id, change):
-        self.progress[question_id] += int(change)
-        self.progress[question_id] = max(self.progress[question_id], 0)
-        self.progress[question_id] = min(self.progress[question_id], 100)
 
 
 class ProgressQueuePriorityRandomLimited(ProgressQueuePriorityRandom):
