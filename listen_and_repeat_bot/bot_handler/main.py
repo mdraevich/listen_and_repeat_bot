@@ -227,8 +227,15 @@ def check_translation(update, context):
         
         update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
 
+    buttons = [
+        [InlineKeyboardButton(
+            text=answers["ignore_question"][lang_code], 
+            callback_data=f"1,{queue_obj.current_question()}")]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
     update.message.reply_text(send_phrase_to_learn(user_id, lang_code),
-                              parse_mode=ParseMode.HTML)
+                              parse_mode=ParseMode.HTML, reply_markup=keyboard)
 
 
 def reset_learning_progress():
@@ -268,6 +275,19 @@ def select_channel_to_learn(update, context, channel_id):
     else:
         update.callback_query.edit_message_text(
                               text=answers["error"][lang_code])
+
+
+@callback_handler.callback_routing.register(1)
+def ignore_question(update, context, question_id):
+    user_id = str(update.callback_query.from_user.id)
+    lang_code = str(update.callback_query.from_user.language_code)
+    answer = answers["ignore_question_success"][lang_code]
+    
+    exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
+    exit_code, queue_obj = progress_db.get_channel_progress(
+                               user_id, channel_id)
+    queue_obj.change_question_progress(question_id, 200)
+    update.callback_query.edit_message_text(text=answer)
 
 
 def show_learning_progress(update, context):
