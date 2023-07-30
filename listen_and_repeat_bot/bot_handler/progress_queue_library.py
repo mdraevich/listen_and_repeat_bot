@@ -20,7 +20,6 @@ class ProgressQueue(dict):
         define required objects for class instance
         """
         self.progress = {}
-        self.ignored_questions = {}
         self.current_question_id = None  
 
     def reset(self):
@@ -44,35 +43,13 @@ class ProgressQueue(dict):
         """
         raise NotImplemented
 
-
     def ignore_question(self, question_id, ignore_ttl):
         """
         args:
             question_id (str) - question_id to ignore
             ignore_ttl (int) - number of questions to do not ask the question
         """
-        self.ignored_questions[question_id] = ignore_ttl
-        self.progress.pop(question_id)
-
-    def is_ignored_question(self, question_id):
-        """
-        args:
-            question_id (str) - question_id to check rather ignored or not
-        returns:
-            True of False - if question_id should be ignored or not
-        """
-
-        return question_id in self.ignored_questions
-
-    def update_ignored_questions(self):
-        """
-        updates ttl value for all ignored questions
-        """
-        for question_id, value in self.ignored_questions.items():
-            if value <= 1:
-                self.ignored_questions.pop(question_id)
-            else:
-                self.ignored_questions[question_id] = value - 1
+        raise NotImplemented
 
     def current_question(self):
         """
@@ -187,11 +164,6 @@ class ProgressQueuePriorityRandomLimited(ProgressQueuePriorityRandom):
     def __init__(self):
         self.selected_subset = None
         super().__init__()
-
-
-    def ignore_question(self, question_id, ignore_ttl):
-        super().ignored_questions(questions, ignore_ttl)
-        self.selected_subset = None
 
 
     def _generate_subset(self):
