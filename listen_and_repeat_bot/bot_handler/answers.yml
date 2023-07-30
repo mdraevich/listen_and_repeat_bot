@@ -76,6 +76,17 @@ answers:
     be: ⚠️ Нешта зламалася, напішыце @mdraevich
     en: ⚠️ Server error, contact @mdraevich
 
+  skip_question:
+    ru: 🔕 Пропустить вопрос
+    be: 🔕 Прамінуць пытанне
+    en: 🔕 Skip question
+
+  skip_question_success:
+    ru: 🔕 Пропустить вопрос
+    be: 🔕 Прамінуць пытанне
+    en: 🔕 Skip question
+
+
   show_progress:
     ru: |
       📊 <b>{}</b>
