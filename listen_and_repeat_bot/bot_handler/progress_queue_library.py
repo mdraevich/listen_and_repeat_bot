@@ -82,12 +82,8 @@ class ProgressQueue(dict):
         """
         args:
             question_id (str) - question_id to change progress of
-            change (float) - value between [-1, 1] that represents
-                             how to change progress of question_id
-                             set to -1 to decrease progress 
-                             set to 1 to increase progress
+            change (float) - value to add up to the question_id progress
         """
-
         raise NotImplemented
 
 
