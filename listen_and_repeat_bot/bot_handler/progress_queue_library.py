@@ -97,8 +97,6 @@ class ProgressQueueRandom(ProgressQueue):
 
     def update_questions(self, questions):
         for question_id in questions:
-            if self.is_ignored_question(question_id):
-                continue
             if question_id not in self.progress:
                 self.progress[question_id] = 0
 
