@@ -11,8 +11,8 @@ class ProgressQueue(dict):
     self.current_question_id - current question_id user
                                have to provide an answer 
     self.progress - dict of <question_id>: <progress_value>
-                    <progress_value> should be between 0-100
-                    0 - user knows nothing; 100 - user knows excellent
+                    <progress_value> should be between 0-1000
+                    0 - user knows nothing; 1000 - user knows excellent
     """
 
     def __init__(self):
@@ -43,6 +43,14 @@ class ProgressQueue(dict):
         """
         raise NotImplemented
 
+    def ignore_question(self, question_id, ignore_ttl):
+        """
+        args:
+            question_id (str) - question_id to ignore
+            ignore_ttl (int) - number of questions to do not ask the question
+        """
+        raise NotImplemented
+
     def current_question(self):
         """
         returns:
@@ -55,7 +63,7 @@ class ProgressQueue(dict):
         returns:
             question_progress (dict) - pairs of 
                                        <question_id> (str), <value> (int)
-                                       where value is between 0-100 and
+                                       where value is between 0-1000 and
                                        represents how a user knows question
         """
         return self.progress
@@ -65,7 +73,7 @@ class ProgressQueue(dict):
         args:
             question_progress (dict) - pairs of 
                                        <question_id> (str), <value> (int)
-                                       where value is between 0-100 and
+                                       where value is between 0-1000 and
                                        represents how a user knows question
         """
         self.progress = progress
@@ -74,13 +82,11 @@ class ProgressQueue(dict):
         """
         args:
             question_id (str) - question_id to change progress of
-            change (float) - value between [-1, 1] that represents
-                             how to change progress of question_id
-                             set to -1 to decrease progress 
-                             set to 1 to increase progress
+            change (float) - value to add up to the question_id progress
         """
-
-        raise NotImplemented
+        self.progress[question_id] += int(change)
+        self.progress[question_id] = max(self.progress[question_id], 0)
+        self.progress[question_id] = min(self.progress[question_id], 1000)
 
 
 class ProgressQueueRandom(ProgressQueue):
@@ -98,9 +104,6 @@ class ProgressQueueRandom(ProgressQueue):
         self.current_question_id = random.choice(
                                    list(self.progress.keys()))
         return self.current_question_id
-
-    def change_question_progress(self, question_id, change):
-        pass
 
     def reset(self):
         for key in self.progress.keys():
@@ -121,7 +124,7 @@ class ProgressQueuePriorityRandom(ProgressQueueRandom):
     def next_question(self):
         choices = random.choices(
                        population=list(self.progress.keys()),
-                       weights=[100-el for el in self.progress.values()],
+                       weights=[-el for el in self.progress.values()],
                        k=1)
         if choices:
             self.current_question_id = choices[0]
@@ -129,11 +132,6 @@ class ProgressQueuePriorityRandom(ProgressQueueRandom):
             self.current_question_id = None
 
         return self.current_question_id
-
-    def change_question_progress(self, question_id, change):
-        self.progress[question_id] += int(change)
-        self.progress[question_id] = max(self.progress[question_id], 0)
-        self.progress[question_id] = min(self.progress[question_id], 100)
 
 
 class ProgressQueuePriorityRandomLimited(ProgressQueuePriorityRandom):
