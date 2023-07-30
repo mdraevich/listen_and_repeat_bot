@@ -33,6 +33,7 @@ from progress_queue_library import (
     ProgressQueuePriorityRandomLimited
 )
 from parsers import parsers
+from event_handlers import callback_handler
 
 
 QUESTIONS_DB_FILE = os.environ.get("QUESTIONS_DB_FILE", 
@@ -245,7 +246,7 @@ def set_channel_to_learn(update, context):
     buttons = [
         [InlineKeyboardButton(
             text=question_db.get_channel_metadata(channel_id, "channel_name"), 
-            callback_data=channel_id)]
+            callback_data=f"0,{channel_id}")]
         for channel_id in question_db.list_all_channels()
     ]
     keyboard = InlineKeyboardMarkup(buttons)
@@ -254,15 +255,12 @@ def set_channel_to_learn(update, context):
                               reply_markup=keyboard)
 
 
-def inline_callbacks(update, context):
+@callback_handler.callback_routing.register(0)
+def select_channel_to_learn(update, context, channel_id):
     user_id = str(update.callback_query.from_user.id)
     lang_code = str(update.callback_query.from_user.language_code)
+
     answer = answers["channel_selected"][lang_code]
-
-    channel_id = update.callback_query.data
-
-
-    update.callback_query.answer()
     
     progress_db.create_channel_progress(user_id, channel_id)
     if progress_db.set_current_channel_of_user(user_id, channel_id):
@@ -324,7 +322,6 @@ if __name__ == "__main__":
         print("specify POLL_CHANNELS_URL variable")
         sys.exit(1)
 
-
     answers = parse_answers_file(answers_file)["answers"]
 
     restore_data()
@@ -333,7 +330,10 @@ if __name__ == "__main__":
     updater = Updater(api_key)
 
     dispatcher = updater.dispatcher
-    updater.dispatcher.add_handler(CallbackQueryHandler(inline_callbacks))
+    dispatcher.add_handler(
+        CallbackQueryHandler(callback_handler.callback_routing.handle)
+    )
+    
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_handler))
     dispatcher.add_handler(CommandHandler("progress", show_learning_progress))
