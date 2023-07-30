@@ -142,13 +142,19 @@ def start(update, context):
                                   parse_mode=ParseMode.HTML)
         logger.info(f"new user has been created, user_id={user_id}")
     else:
-        update.message.reply_text(send_phrase_to_learn(user_id, lang_code),
-                                  parse_mode=ParseMode.HTML)
+        send_phrase_to_learn(update, context)
 
 
-def send_phrase_to_learn(user_id, lang_code):
+def send_phrase_to_learn(update, context, from_callback=False):
     # temporary solution
     update_question_db()
+
+    if from_callback:
+        user_id = str(update.callback_query.from_user.id)
+        lang_code = str(update.callback_query.from_user.language_code)
+    else:
+        user_id = str(update.message.from_user.id)
+        lang_code = str(update.message.from_user.language_code)
 
     exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
     if exit_code != 0:
@@ -170,11 +176,29 @@ def send_phrase_to_learn(user_id, lang_code):
     question_obj = question_db.get_question_by_id(channel_id, question_id)
     
     question = question_obj["question"]
+    reply_with = ""
+
     if len(question_obj["examples"]) > 0:
         example = random.choice(question_obj["examples"])
-        return f"{example}\n\n🤔 ... <b>{question}</b>?"
+        reply_with = f"{example}\n\n🤔 ... <b>{question}</b>?"
     else:
-        return f"🤔 ... <b>{question}</b>?"
+        reply_with = f"🤔 ... <b>{question}</b>?"
+
+    buttons = [
+        [InlineKeyboardButton(
+            text=answers["ignore_question"][lang_code], 
+            callback_data=f"1,{queue_obj.current_question()}")]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
+    if from_callback:
+        update.callback_query.message.reply_text(
+            reply_with, 
+            parse_mode=ParseMode.HTML,
+            reply_markup=keyboard)
+    else:
+        update.message.reply_text(reply_with, parse_mode=ParseMode.HTML,
+                                  reply_markup=keyboard)
 
 
 
@@ -227,15 +251,8 @@ def check_translation(update, context):
         
         update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
 
-    buttons = [
-        [InlineKeyboardButton(
-            text=answers["ignore_question"][lang_code], 
-            callback_data=f"1,{queue_obj.current_question()}")]
-    ]
-    keyboard = InlineKeyboardMarkup(buttons)
+    send_phrase_to_learn(update, context)
 
-    update.message.reply_text(send_phrase_to_learn(user_id, lang_code),
-                              parse_mode=ParseMode.HTML, reply_markup=keyboard)
 
 
 def reset_learning_progress():
@@ -257,9 +274,7 @@ def set_channel_to_learn(update, context):
         for channel_id in question_db.list_all_channels()
     ]
     keyboard = InlineKeyboardMarkup(buttons)
-
-    update.message.reply_text(answer, 
-                              reply_markup=keyboard)
+    update.message.reply_text(answer, reply_markup=keyboard)
 
 
 @callback_handler.callback_routing.register(0)
@@ -275,6 +290,7 @@ def select_channel_to_learn(update, context, channel_id):
     else:
         update.callback_query.edit_message_text(
                               text=answers["error"][lang_code])
+    send_phrase_to_learn(update, context, from_callback=True)
 
 
 @callback_handler.callback_routing.register(1)
@@ -288,6 +304,7 @@ def ignore_question(update, context, question_id):
                                user_id, channel_id)
     queue_obj.change_question_progress(question_id, 200)
     update.callback_query.edit_message_text(text=answer)
+    send_phrase_to_learn(update, context, from_callback=True)
 
 
 def show_learning_progress(update, context):
