@@ -303,7 +303,7 @@ def ignore_question(update, context, question_id):
     exit_code, queue_obj = progress_db.get_channel_progress(
                                user_id, channel_id)
     queue_obj.change_question_progress(question_id, 200)
-    update.callback_query.edit_message_text(text=answer)
+    update.callback_query.delete_message()
     send_phrase_to_learn(update, context, from_callback=True)
 
 
