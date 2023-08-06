@@ -120,3 +120,9 @@ answers:
       🟨 <b>{}</b> - Medium
       🟥 <b>{}</b> - Low
       🔕 <b>{}</b> - Ignored
+
+
+  reset_progress_info:
+    ru: Твой прогресс в канале {} был сброшен!
+    be: Твой прагрэс у канале {} быў скінуты!
+    en: Your progress of channel {} was cleared!
