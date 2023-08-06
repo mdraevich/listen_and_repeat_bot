@@ -255,7 +255,7 @@ def check_translation(update, context):
 
 
 
-def reset_learning_progress():
+def reset_learning_progress(update, context):
     user_id = str(update.message.from_user.id)
     lang_code = str(update.message.from_user.language_code)
 
