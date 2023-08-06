@@ -255,8 +255,22 @@ def check_translation(update, context):
 
 
 
-def reset_learning_progress():
-    pass
+def reset_learning_progress(update, context):
+    user_id = str(update.message.from_user.id)
+    lang_code = str(update.message.from_user.language_code)
+
+    exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
+    if exit_code != 0:
+        return answers["error"][lang_code]
+    if channel_id is None:
+        return answers["hello"][lang_code]
+
+    progress_db.delete_channel_progress(user_id, channel_id)
+    progress_db.create_channel_progress(user_id, channel_id)
+
+    update.message.reply_text(
+        answers["reset_progress_info"][lang_code].format(channel_id))
+
 
 
 def set_channel_to_learn(update, context):
@@ -375,6 +389,7 @@ if __name__ == "__main__":
     dispatcher.add_handler(CommandHandler("help", help_handler))
     dispatcher.add_handler(CommandHandler("progress", show_learning_progress))
     dispatcher.add_handler(CommandHandler("learn", set_channel_to_learn))
+    dispatcher.add_handler(CommandHandler("reset", reset_learning_progress))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
     updater.start_polling()
