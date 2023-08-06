@@ -96,7 +96,13 @@ answers:
       You might be too clever person for this question... 🥱
       I increased question's rating to ask it less frequently.
 
-
+  no_user_answer:
+    ru: |
+      ¯\_(ツ)_/¯
+    be: |
+      ¯\_(ツ)_/¯
+    en: |
+      ¯\_(ツ)_/¯
 
   show_progress:
     ru: |
