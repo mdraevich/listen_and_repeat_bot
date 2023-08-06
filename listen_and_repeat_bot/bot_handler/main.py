@@ -21,7 +21,9 @@ from telegram.ext import (
 from telegram import (
     ParseMode,
     InlineKeyboardButton,
-    InlineKeyboardMarkup
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    KeyboardButton
 )
 
 from progress_db import ProgressDatabase
@@ -93,6 +95,12 @@ def restore_data():
         except FileNotFoundError as exc:
             logger.warning("Cannot find filename=%s to restore data",
                            filename)
+
+
+def random_answer(channel_id):
+    random_question = random.choice(question_db.get_question_ids(channel_id))
+    question_obj = question_db.get_question_by_id(channel_id, random_question)
+    return random.choice(question_obj["answers"])
 
 
 def update_question_db():
@@ -184,12 +192,15 @@ def send_phrase_to_learn(update, context, from_callback=False):
     else:
         reply_with = f"🤔 ... <b>{question}</b>?"
 
-    buttons = [
-        [InlineKeyboardButton(
-            text=answers["ignore_question"][lang_code], 
-            callback_data=f"1,{queue_obj.current_question()}")]
-    ]
-    keyboard = InlineKeyboardMarkup(buttons)
+    buttons = []
+    buttons.append([KeyboardButton(text=random.choice(question_obj["answers"]))])
+    for item in [ random_answer(channel_id) for i in range(3) ]:
+        buttons.append([KeyboardButton(text=item)])
+
+    random.shuffle(buttons)
+    buttons.append([KeyboardButton(text=answers["no_user_answer"][lang_code])])
+
+    keyboard = ReplyKeyboardMarkup(buttons)
 
     if from_callback:
         update.callback_query.message.reply_text(
