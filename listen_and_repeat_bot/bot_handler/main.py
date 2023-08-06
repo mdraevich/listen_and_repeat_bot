@@ -10,6 +10,7 @@ import yaml
 from urllib import request, error
 from difflib import SequenceMatcher
 
+from jinja2 import Environment, BaseLoader
 from telegram.ext import (
     Updater,
     CommandHandler,
@@ -21,7 +22,9 @@ from telegram.ext import (
 from telegram import (
     ParseMode,
     InlineKeyboardButton,
-    InlineKeyboardMarkup
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    KeyboardButton
 )
 
 from progress_db import ProgressDatabase
@@ -93,6 +96,12 @@ def restore_data():
         except FileNotFoundError as exc:
             logger.warning("Cannot find filename=%s to restore data",
                            filename)
+
+
+def random_answer(channel_id):
+    random_question = random.choice(question_db.get_question_ids(channel_id))
+    question_obj = question_db.get_question_by_id(channel_id, random_question)
+    return random.choice(question_obj["answers"])
 
 
 def update_question_db():
@@ -174,22 +183,17 @@ def send_phrase_to_learn(update, context, from_callback=False):
 
     question_id = queue_obj.next_question()
     question_obj = question_db.get_question_by_id(channel_id, question_id)
-    
-    question = question_obj["question"]
-    reply_with = ""
+    reply_with = f"🤔 ... <b>{question_obj['question']}</b>?"
 
-    if len(question_obj["examples"]) > 0:
-        example = random.choice(question_obj["examples"])
-        reply_with = f"{example}\n\n🤔 ... <b>{question}</b>?"
-    else:
-        reply_with = f"🤔 ... <b>{question}</b>?"
+    buttons = []
+    buttons.append([KeyboardButton(text=random.choice(question_obj["answers"]))])
+    for item in [ random_answer(channel_id) for i in range(3) ]:
+        buttons.append([KeyboardButton(text=item)])
 
-    buttons = [
-        [InlineKeyboardButton(
-            text=answers["ignore_question"][lang_code], 
-            callback_data=f"1,{queue_obj.current_question()}")]
-    ]
-    keyboard = InlineKeyboardMarkup(buttons)
+    random.shuffle(buttons)
+    buttons.append([KeyboardButton(text=answers["no_user_answer"][lang_code])])
+
+    keyboard = ReplyKeyboardMarkup(buttons)
 
     if from_callback:
         update.callback_query.message.reply_text(
@@ -235,28 +239,52 @@ def check_translation(update, context):
         else:
             formatted_answers.append(answer)
 
+    answer_template = Environment(loader=BaseLoader()).from_string(
+                                answers["user_answer_feedback"][lang_code])
+    answer_render = answer_template.render({
+        "is_answer_correct": is_user_answer_correct,
+        "answers": correct_answers[:3],
+        "example": random.choice(question["examples"]) \
+                            if len(question["examples"]) else "",
+        "tags": ["think-of-an-example"]
+
+    })
+
     if is_user_answer_correct:
         # answer is correct
         queue_obj.change_question_progress(question_id, max_similar_value * 25)
         logger.debug("Change question=%s/%s/%s progress by value=%s", 
                      user_id, channel_id, question_id, max_similar_value * 25)
         
-        update.message.reply_text(f"✅ {' / '.join(formatted_answers)}",
-                                  parse_mode=ParseMode.HTML)
+        update.message.reply_text(answer_render, parse_mode=ParseMode.HTML)
     else:
         # answer is incorrect
         queue_obj.change_question_progress(question_id, -35)
         logger.debug("Change question=%s/%s/%s progress by value=%s", 
                      user_id, channel_id, question_id, -35)
         
-        update.message.reply_text(f"❌ {' / '.join(formatted_answers)}")
+        update.message.reply_text(answer_render, parse_mode=ParseMode.HTML)
 
     send_phrase_to_learn(update, context)
 
 
 
-def reset_learning_progress():
-    pass
+def reset_learning_progress(update, context):
+    user_id = str(update.message.from_user.id)
+    lang_code = str(update.message.from_user.language_code)
+
+    exit_code, channel_id = progress_db.get_current_channel_of_user(user_id)
+    if exit_code != 0:
+        return answers["error"][lang_code]
+    if channel_id is None:
+        return answers["hello"][lang_code]
+
+    progress_db.delete_channel_progress(user_id, channel_id)
+    progress_db.create_channel_progress(user_id, channel_id)
+
+    update.message.reply_text(
+        answers["reset_progress_info"][lang_code].format(channel_id))
+
 
 
 def set_channel_to_learn(update, context):
@@ -375,6 +403,7 @@ if __name__ == "__main__":
     dispatcher.add_handler(CommandHandler("help", help_handler))
     dispatcher.add_handler(CommandHandler("progress", show_learning_progress))
     dispatcher.add_handler(CommandHandler("learn", set_channel_to_learn))
+    dispatcher.add_handler(CommandHandler("reset", reset_learning_progress))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
     updater.start_polling()
