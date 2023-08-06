@@ -96,7 +96,40 @@ answers:
       You might be too clever person for this question... 🥱
       I increased question's rating to ask it less frequently.
 
+  no_user_answer:
+    ru: |
+      ¯\_(ツ)_/¯
+    be: |
+      ¯\_(ツ)_/¯
+    en: |
+      ¯\_(ツ)_/¯
 
+  user_answer_feedback:
+    ru: |
+      {% if is_answer_correct %}✅ Верно!{% else %}❌ Неправильно...{% endif %}
+      {% if (answers | length) %}
+      <b>Возможные варианты ответа</b>:
+      {{ answers | join(', ') }}{% endif %}
+      {% if (example | length) %}
+      <b>Пример использования</b>:
+      <code>{{ example }}</code>{% endif %}
+    be: |
+      {% if is_answer_correct %}✅ Сапраўды!{% else %}❌ Памыліўся...{% endif %}
+      {% if (answers | length) %}
+      <b>Магчымыя варыянты адказа</b>:
+      {{ answers | join(', ') }}{% endif %}
+      {% if (example | length) %}
+      <b>Прыклад ужывання</b>:
+      <code>{{ example }}</code>{% endif %}
+
+    en: |
+      {% if is_answer_correct %}✅ Nice!{% else %}❌ Incorrect...{% endif %}
+      {% if (answers | length) %}
+      <b>Might be an answer</b>:
+      {{ answers | join(', ') }}{% endif %}
+      {% if (example | length) %}
+      <b>How to use</b>:
+      <code>{{ example }}</code>{% endif %}
 
   show_progress:
     ru: |
