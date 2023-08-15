@@ -147,7 +147,7 @@ class ProgressQueuePriorityRandomLimited(ProgressQueuePriorityRandom):
     """
 
     SUBSET_SIZE = 10
-    SUBSET_TTL = 18
+    SUBSET_TTL = 14
 
     def __init__(self):
         self.selected_subset = None
