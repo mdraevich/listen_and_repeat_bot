@@ -232,13 +232,6 @@ def check_translation(update, context):
     max_similar_value, max_similar_idx = max(answers_similarity)
     is_user_answer_correct = max_similar_value > SIMILARITY_REQUIRED
 
-    formatted_answers = []
-    for (idx, answer) in enumerate(correct_answers):
-        if is_user_answer_correct and idx == max_similar_idx:
-            formatted_answers.append(f"<u><b>{answer}</b></u>")
-        else:
-            formatted_answers.append(answer)
-
     answer_template = Environment(loader=BaseLoader()).from_string(
                                 answers["user_answer_feedback"][lang_code])
     answer_render = answer_template.render({
@@ -252,9 +245,9 @@ def check_translation(update, context):
 
     if is_user_answer_correct:
         # answer is correct
-        queue_obj.change_question_progress(question_id, max_similar_value * 25)
+        queue_obj.change_question_progress(question_id, 25)
         logger.debug("Change question=%s/%s/%s progress by value=%s", 
-                     user_id, channel_id, question_id, max_similar_value * 25)
+                     user_id, channel_id, question_id, 25)
         
         update.message.reply_text(answer_render, parse_mode=ParseMode.HTML)
     else:
