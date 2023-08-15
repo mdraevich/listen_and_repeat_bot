@@ -366,8 +366,10 @@ def show_learning_progress(update, context):
                               parse_mode=ParseMode.HTML)
 
 
-        
-                
+def show_version_info(update, context):
+    git_version = os.environ.get("GIT_VERSION", "unknown-version")
+    update.message.reply_text(git_version, parse_mode=ParseMode.HTML)     
+
 
 if __name__ == "__main__":
 
@@ -404,6 +406,7 @@ if __name__ == "__main__":
     dispatcher.add_handler(CommandHandler("progress", show_learning_progress))
     dispatcher.add_handler(CommandHandler("learn", set_channel_to_learn))
     dispatcher.add_handler(CommandHandler("reset", reset_learning_progress))
+    dispatcher.add_handler(CommandHandler("version", show_version_info))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command,
                                           check_translation))
     updater.start_polling()
