@@ -14,6 +14,7 @@ services:
       QUESTIONS_DB_FILE: ${QUESTIONS_DB_FILE}
       USERS_DB_FILE: ${USERS_DB_FILE}
       LOGLEVEL: ${LOGLEVEL}
+      GIT_VERSION:
     volumes:
       - type: volume
         source: data-storage
@@ -35,6 +36,7 @@ services:
       API_HASH: ${API_HASH}
       SESSION_NAME: ${SESSION_NAME}
       LOGLEVEL: ${LOGLEVEL}
+      GIT_VERSION:
     volumes:
       - ./secrets/config.yml:/listen_and_repeat_bot/config.yml
       - ./secrets/listen_and_repeat.session:/listen_and_repeat_bot/listen_and_repeat.session
