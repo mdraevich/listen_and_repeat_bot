@@ -1,6 +1,14 @@
 import json
 import random
+import logging
+import os
 
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.getLevelName(os.environ.get("LOGLEVEL", "WARNING"))
+)
+logger = logging.getLogger(__name__)
 
 
 class ProgressQueue(dict):
@@ -185,3 +193,51 @@ class ProgressQueuePriorityRandomLimited(ProgressQueuePriorityRandom):
             self.current_question_id = None
 
         return self.current_question_id
+
+
+class ProgressQueueLearnModesAndSubsets(ProgressQueuePriorityRandomLimited):
+    """
+        LEARNING_MODE:
+            0 - add (learn) new words
+            1 - learn words (moderate)
+            2 - learn words (good)
+            3 - repeat words (excellent)
+
+        SUBSET_SIZE: amount of words to learn
+        SUBSET_TTL: how much questions ask about the subset
+    """
+
+    LEARNING_MODE = 0
+    SUBSET_SIZE = 8
+    SUBSET_TTL = 12
+
+    def _shuffle(self, array):
+        random.shuffle(array)
+        return array
+
+    def _generate_subset(self):
+        question_buffer = [
+            self._shuffle([k for k,v in self.progress.items() if v == 0]),
+            self._shuffle([k for k,v in self.progress.items() if 0   < v <= 400]),
+            self._shuffle([k for k,v in self.progress.items() if 400 < v <= 800]),
+            self._shuffle([k for k,v in self.progress.items() if 800 < v])
+        ]
+
+        logger.debug(f"Question buffers length are the following "
+                     f"{[ len(i) for i in question_buffer]}")
+
+        if len(question_buffer[1]) <= 2 * self.SUBSET_SIZE:
+            self.LEARNING_MODE = 0
+        else:
+            self.LEARNING_MODE = random.choice([1, 1, 2, 2, 3])
+
+        question_ids = []
+        sorted_qb = sorted(range(4),
+                           key=lambda item: abs(self.LEARNING_MODE - item))
+        logger.debug(f"LEARNING_MODE is equal to {self.LEARNING_MODE}")
+        logger.debug(f"Sorted question buffers are equal to {sorted_qb}")
+
+        for qb_id in sorted_qb:
+            question_ids += question_buffer[qb_id]
+
+        return question_ids[:self.SUBSET_SIZE]

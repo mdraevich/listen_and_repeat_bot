@@ -33,7 +33,8 @@ from progress_queue_library import (
     ProgressQueue, 
     ProgressQueueRandom,
     ProgressQueuePriorityRandom,
-    ProgressQueuePriorityRandomLimited
+    ProgressQueuePriorityRandomLimited,
+    ProgressQueueLearnModesAndSubsets
 )
 from parsers import parsers
 from event_handlers import callback_handler
@@ -54,7 +55,7 @@ logger = logging.getLogger(__name__)
 
 
 progress_db = ProgressDatabase(
-                queue_class=ProgressQueuePriorityRandomLimited)
+                queue_class=ProgressQueueLearnModesAndSubsets)
 question_db = QuestionDatabase()
 bonus_db = {}
 
