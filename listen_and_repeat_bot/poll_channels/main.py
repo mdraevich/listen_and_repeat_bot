@@ -14,7 +14,8 @@ from poll_public_channel import PollPublicChannel
 
 
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.getLevelName(os.environ.get("LOGLEVEL", "WARNING"))
 )
 logger = logging.getLogger(__name__)
 
