@@ -48,7 +48,7 @@ SIMILARITY_REQUIRED = 0.8
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    level=logging.getLevelName(os.environ.get("LOGLEVEL", "WARNING"))
 )
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,7 @@ logger = logging.getLogger(__name__)
 progress_db = ProgressDatabase(
                 queue_class=ProgressQueuePriorityRandomLimited)
 question_db = QuestionDatabase()
+bonus_db = {}
 
 db_list = [
     (question_db, QUESTIONS_DB_FILE),
@@ -232,13 +233,6 @@ def check_translation(update, context):
     max_similar_value, max_similar_idx = max(answers_similarity)
     is_user_answer_correct = max_similar_value > SIMILARITY_REQUIRED
 
-    formatted_answers = []
-    for (idx, answer) in enumerate(correct_answers):
-        if is_user_answer_correct and idx == max_similar_idx:
-            formatted_answers.append(f"<u><b>{answer}</b></u>")
-        else:
-            formatted_answers.append(answer)
-
     answer_template = Environment(loader=BaseLoader()).from_string(
                                 answers["user_answer_feedback"][lang_code])
     answer_render = answer_template.render({
@@ -250,12 +244,19 @@ def check_translation(update, context):
 
     })
 
+    if user_id not in bonus_db:
+        bonus_db[user_id] = {}
+
+    if question_id not in bonus_db[user_id]:
+        bonus_db[user_id][question_id] = 0
+
     if is_user_answer_correct:
         # answer is correct
-        queue_obj.change_question_progress(question_id, max_similar_value * 25)
+        queue_obj.change_question_progress(question_id, 15 + bonus_db[user_id][question_id])
         logger.debug("Change question=%s/%s/%s progress by value=%s", 
-                     user_id, channel_id, question_id, max_similar_value * 25)
+                     user_id, channel_id, question_id, 15 + bonus_db[user_id][question_id])
         
+        bonus_db[user_id][question_id] += max(3, bonus_db[user_id][question_id] // 3)
         update.message.reply_text(answer_render, parse_mode=ParseMode.HTML)
     else:
         # answer is incorrect
@@ -263,6 +264,7 @@ def check_translation(update, context):
         logger.debug("Change question=%s/%s/%s progress by value=%s", 
                      user_id, channel_id, question_id, -35)
         
+        bonus_db[user_id][question_id] = 0
         update.message.reply_text(answer_render, parse_mode=ParseMode.HTML)
 
     send_phrase_to_learn(update, context)
