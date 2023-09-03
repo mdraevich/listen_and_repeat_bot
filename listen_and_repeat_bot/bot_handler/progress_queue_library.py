@@ -93,7 +93,7 @@ class ProgressQueue(dict):
             change (float) - value to add up to the question_id progress
         """
         self.progress[question_id] += int(change)
-        self.progress[question_id] = max(self.progress[question_id], 0)
+        self.progress[question_id] = max(self.progress[question_id], 1)
         self.progress[question_id] = min(self.progress[question_id], 1000)
 
 
