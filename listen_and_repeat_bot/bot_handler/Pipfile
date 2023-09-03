@@ -7,6 +7,7 @@ name = "pypi"
 python-telegram-bot = "==13.14"
 pyyaml = "*"
 jinja2 = "*"
+emoji = "*"
 
 [dev-packages]
 pytest = "*"
