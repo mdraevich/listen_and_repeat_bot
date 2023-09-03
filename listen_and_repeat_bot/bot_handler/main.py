@@ -124,7 +124,8 @@ def update_question_db():
         formatted_data = []
         for entry in channel["posts"]:
             formatted_entry = parsers.run(channel["tags"]["parser"])(entry["data"])
-            formatted_data.append(formatted_entry)
+            if formatted_entry is not None:
+                formatted_data.append(formatted_entry)
         
         question_db.update_channel_posts(
             channel_id,
