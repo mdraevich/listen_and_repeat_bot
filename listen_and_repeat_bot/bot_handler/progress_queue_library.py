@@ -241,3 +241,75 @@ class ProgressQueueLearnModesAndSubsets(ProgressQueuePriorityRandomLimited):
             question_ids += question_buffer[qb_id]
 
         return question_ids[:self.SUBSET_SIZE]
+
+
+class ProgressQueueLearnModesAndSubsetsUpgrade(ProgressQueueRandom):
+    """
+        LEARNING_MODE:
+            0   - add (learn) new words
+            1   - learn words (moderate)
+            ...
+            n   - learn words (good)
+            n+1 - repeat words (excellent)
+
+        SUBSET_SIZE: amount of words to learn
+        SUBSET_TTL: how much questions ask about the subset
+    """
+
+    LEARNING_MODE = 0
+    LMODE_AMOUNT = 6
+    SUBSET_SIZE = 8
+
+    def __init__(self):
+        self.selected_subset = []
+        super().__init__()
+
+    def sample(self, minv, maxv):
+        return [key for key,value in self.progress.items()
+                if minv < value <= maxv]
+
+    def _shuffle(self, array):
+        random.shuffle(array)
+        return array
+
+    def _generate_subset(self):
+        question_buffer = []
+        question_buffer.append(self.sample(-1, 0))
+
+        group_size = 1000 // self.LMODE_AMOUNT
+        for i in range(self.LMODE_AMOUNT):
+            question_buffer.append(self.sample(i * group_size,
+                                              (i + 1) * group_size))
+
+        logger.debug(f"All questions are divided into groups of"
+                     f"group_size={group_size}")
+        logger.debug(f"Question buffer element lengths are the following "
+                     f"{[ len(i) for i in question_buffer]}")
+
+        if len(question_buffer[1]) <= 2 * self.SUBSET_SIZE:
+            self.LEARNING_MODE = 0
+        else:
+            self.LEARNING_MODE = random.randrange(self.LMODE_AMOUNT) + 1
+
+        question_ids = []
+        sorted_qb = sorted(range(len(question_buffer)),
+                           key=lambda item: abs(self.LEARNING_MODE - item))
+
+        logger.debug(f"LEARNING_MODE is equal to {self.LEARNING_MODE}")
+        logger.debug(f"Sorted question buffers are equal to {sorted_qb}")
+        for qb_id in sorted_qb:
+            question_ids += question_buffer[qb_id]
+
+        return self._shuffle(question_ids[:self.SUBSET_SIZE] * 3)
+
+    def next_question(self):
+        if not len(self.selected_subset):
+            self.selected_subset = self._generate_subset()
+
+        self.current_question_id = self.selected_subset.pop()
+        logger.debug(f"Selected subset for asking questions "
+                     f"is {self.selected_subset}")
+        logger.debug(f"Next question to ask has "
+                     f"question_id={self.current_question_id}")
+
+        return self.current_question_id
